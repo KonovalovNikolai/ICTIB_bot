@@ -6,7 +6,7 @@ from aiohttp import web
 
 API_TOKEN = "1133045935:AAGwz37J1uFoE_wTIMnoTuy7KLuw_bX_E54"
 
-WEBHOOK_HOST = '<ip/host where the bot is running>'
+WEBHOOK_HOST = '35.241.150.198'
 WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
 WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
 
