@@ -18,10 +18,8 @@ def main():
     logger.addHandler(f_handler)
 
     logger.error('Bot started')
-    try:
-        bot.polling(none_stop=True)
-    except Exception as e:
-        logger.Exception("Fail:")
+    
+    bot.polling(none_stop=True)
 
 if __name__ == "__main__":
     main()
