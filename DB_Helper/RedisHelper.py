@@ -1,9 +1,10 @@
 from Misc.states import States
 import redis
 
+PASS = "QzEcTb123789"
 
 def get_current_state(user_id):
-    with redis.Redis() as db:
+    with redis.Redis(password=PASS) as db:
         try:
             return db.get(user_id).decode('utf-8')
         except:  # Если такого ключа почему-то не оказалось
@@ -11,7 +12,7 @@ def get_current_state(user_id):
 
 # Сохраняем текущее «состояние» пользователя в нашу базу
 def set_state(user_id, value):
-    with redis.Redis() as db:
+    with redis.Redis(password=PASS) as db:
         try:
             db.set(user_id, value)
             return True
@@ -20,7 +21,7 @@ def set_state(user_id, value):
             return False
 
 def delet_user(user_id):
-    with redis.Redis() as db:
+    with redis.Redis(password=PASS) as db:
         try:
             db.delete(user_id)
             return True
@@ -28,7 +29,7 @@ def delet_user(user_id):
             return False
         
 def get_message(value):
-    with redis.Redis(db=1) as db:
+    with redis.Redis(db=1, password=PASS) as db:
         try:
             return db.get(value).decode('utf-8')
         except:

@@ -35,9 +35,9 @@ def choose_dey(message):
         timetable_logger.error("User %s got a timetable keyboard" % chat_id)
         date = GetTodayDate(0)
         set_state(chat_id, States.S_TIMETABLE.value)
-        bot.send_message(chat_id=chat_id,
+        print(bot.send_message(chat_id=chat_id,
                         text= get_message(Message.M_TimeTable_Today.value).format(date),
-                        reply_markup=m.day_choose_kb)
+                        reply_markup=m.day_choose_kb))
 
 @bot.message_handler(func = lambda message: get_current_state(message.chat.id) == States.S_TIMETABLE.value)
 def send_timetable(message):
@@ -77,4 +77,4 @@ def send_timetable(message):
     else:
         timetable_logger.error("User %s made wrong choice: %s" % (chat_id, text))
         bot.send_message(chat_id = chat_id,
-                        text= get_message(Message.M_Error_Wrong_Choice))
+                        text= get_message(Message.M_Error_Wrong_Choice.value))
