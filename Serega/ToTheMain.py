@@ -1,31 +1,44 @@
-import logging
-from handlers.markups import main_markup as m
-from config import bot
-from Misc.states import States
-from DB_Helper.SQLHelper import SQLHelper
 from DB_Helper.RedisHelper import set_state, get_current_state
+from DB_Helper.SQLHelper import SQLHelper
+from handlers.markups import main_markup as m
+from Serega.send_message import send_message
+from Misc.states import States
+import logging
 
 logger = logging.getLogger('Bot.ToTheMain')
 
-def BackToMain(chat_id, text):
+def BackToMain(chat_id, text = "\U0001f3e0 Главное меню."):
+    """
+    Функция для возврата пользователя в главное меню учитывая его тип.
+    chat_id - id пользователя
+    text - текст сообщения для отправки
+        по умолчанию выводит "\U0001f3e0 Главное меню."
+        \U0001f3e0 - юникод эмоута дома (https://unicode.org/emoji/charts/full-emoji-list.html#1f3e0)
+    """
+    #Берём из бд тип пользователя
     db_worker = SQLHelper()
     user_type = db_worker.TakeInfo(chat_id)[1]
-
-    set_state(chat_id, States.S_NORMAL.value)
-
+    db_worker.close()
+    
+    #Отправляем текст сообщения
     if user_type == "stud":
-        bot.send_message(chat_id= chat_id,
+        send_message(chat_id= chat_id,
                         text= text,
                         reply_markup=m.main_markup_stud_kb)
-        logger.error("User %s was returned to the main menu as student" % chat_id)
+
+        logger.error("Пользователь %s вернулся в главное меню как студент" % chat_id)
+
     elif user_type == "teach":
-        bot.send_message(chat_id= chat_id,
+        send_message(chat_id= chat_id,
                         text= text,
                         reply_markup=m.main_markup_teach_kb)
-        logger.error("User %s was returned to the main menu as teacher" % chat_id)
+        logger.error("Пользователь %s вернулся в главное меню как препод" % chat_id)
+
     elif user_type == "abiturient":
-        bot.send_message(chat_id= chat_id,
+        send_message(chat_id= chat_id,
                         text= text,
                         reply_markup=m.main_markup_abiturient_kb)
-        logger.error("User %s was returned to the main menu as abiturient" % chat_id)
-    db_worker.close()
+        logger.error("Пользователь %s вернулся в главное меню как абитуриент" % chat_id)
+    
+    #Меняем состояние пользователя
+    set_state(chat_id, States.S_NORMAL.value)
