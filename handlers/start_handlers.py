@@ -1,14 +1,20 @@
-from DB_Helper.RedisHelper import set_state, get_current_state, get_message
-from DB_Helper.SQLHelper import SQLHelper
-from Serega.send_message import send_message
-from Serega.ToTheMain import BackToMain
-from .markups import start_markup as m
-from Misc.message import Message
-from Misc.states import States
-from telebot import types
-from config import bot
 import logging
 import re
+
+from telebot import types
+
+from DB_Helper.RedisHelper import set_state, get_current_state, get_message
+from DB_Helper.SQLHelper import SQLHelper
+
+from Serega.send_message import send_message
+from Serega.ToTheMain import BackToMain
+
+from Misc.message import Message
+from Misc.states import States
+
+from .markups import start_markup as m
+
+from config import bot
 
 start_logger = logging.getLogger('Bot.start_handle')
 
@@ -24,7 +30,7 @@ def command_handler(message):
 
     db_worker = SQLHelper()
 
-    if db_worker.IsInBD(chat_id):
+    if (db_worker.IsInBD(chat_id)):
         start_logger.error('Пользователь %s обновил UI' % chat_id)
         BackToMain(chat_id, "Интерфейс обновлён.") #ответ пользователю
     else:
@@ -47,7 +53,7 @@ def user_entering_type(message):
     chat_id = message.chat.id
     text = message.text.lower()
     
-    if text == "я студент!":
+    if (text == "я студент!"):
         send_message(chat_id= chat_id, 
                     text= get_message(Message.M_Start_Student.value) , 
                     reply_markup = types.ReplyKeyboardRemove())
@@ -56,7 +62,7 @@ def user_entering_type(message):
         
         set_state(chat_id, States.S_START_STUD.value)
 
-    elif text == "я преподаватель!":
+    elif (text == "я преподаватель!"):
         bot.send_message(chat_id= chat_id,
                         text= get_message(Message.M_Start_Teacher.value) ,
                         reply_markup = types.ReplyKeyboardRemove())
@@ -65,7 +71,7 @@ def user_entering_type(message):
         
         set_state(chat_id, States.S_START_TEACH.value)
 
-    elif text == "я абитуриент!":
+    elif (text == "я абитуриент!"):
         BackToMain(chat_id, get_message(Message.M_Start_Abiturient.value))
 
         db_worker = SQLHelper()
@@ -88,7 +94,7 @@ def user_entering_stud_group(message):
     chat_id = message.chat.id
     text = message.text.lower()
     
-    if  7 <= len(text) <= 8 and re.fullmatch(r'кт[абсм][зо][1-5]-[0-9]+', text):
+    if (7 <= len(text) <= 8 and re.fullmatch(r'кт[абсм][зо][1-5]-[0-9]+', text)):
         text = text[0:2].upper() + text[2:4].lower() + text[4:] #Приводим группу к нужному формату
         
         start_logger.error('Пользователь %s ввёл свою группу: %s' % (chat_id, text))
@@ -111,7 +117,7 @@ def user_entering_tech_name(message):
     chat_id = message.chat.id #id чата
     text = message.text.lower() #введённое ФИО
     
-    if re.fullmatch(r'\w+ \w[.] \w[.]', text):
+    if (re.fullmatch(r'\w+ \w[.] \w[.]', text)):
         text = text[0].upper() + text[1:]#Приводим текст к нужному формату
         
         for i in re.finditer(r'\w[.]', text):

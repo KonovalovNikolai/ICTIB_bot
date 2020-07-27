@@ -5,7 +5,7 @@ import telebot
 from config import bot
 from aiohttp import web
 
-API_TOKEN = "1133045935:AAGwz37J1uFoE_wTIMnoTuy7KLuw_bX_E54"
+API_TOKEN = "1224628524:AAETm-VPJdBfGvunFoC71lEpkoR0Okox8eEs"
 
 WEBHOOK_HOST = '35.241.150.198'
 WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')

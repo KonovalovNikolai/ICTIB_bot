@@ -1,13 +1,18 @@
+import logging
+
 from DB_Helper.SQLHelper import SQLHelper
-from .markups import day_choose_markup as m
 from DB_Helper.RedisHelper import set_state, get_current_state, get_message
+
 from Serega.Timetable import GetTodayDate, GetTimetable
 from Serega.send_message import send_message
 from Serega.ToTheMain import BackToMain
+
 from Misc.message import Message
 from Misc.states import States
+
+from .markups import day_choose_markup as m
+
 from config import bot
-import logging
 
 timetable_logger = logging.getLogger('Bot.timetable_handle')
 
@@ -40,7 +45,7 @@ def choose_day(message):
     db_worker.close()
 
     #Если пользователь не абитуриент, то выводим календарь
-    if user_type != "abiturient":
+    if (user_type != "abiturient"):
         date = GetTodayDate(0) #Сегоднящняя дата
         send_message(chat_id=chat_id,
                         text= get_message(Message.M_TimeTable_Today.value).format(date),
@@ -62,7 +67,7 @@ def send_timetable(message):
     text = message.text.lower()
 
     #Если выбран день недели
-    if text in day_to_number:
+    if (text in day_to_number):
         #Получаем группу пользователя
         db_worker = SQLHelper()
         group = db_worker.TakeInfo(chat_id)[2]
@@ -79,7 +84,7 @@ def send_timetable(message):
         BackToMain(chat_id)
         
     #Авторасписание
-    elif text == 'авторасписание':
+    elif (text == 'авторасписание'):
         #Меняем параметр авторасписания в бд
         db_worker = SQLHelper()
         ret = db_worker.UpdateAuto(chat_id)
@@ -92,7 +97,7 @@ def send_timetable(message):
         timetable_logger.error("Пользователь %s изменил параметр авторасписания:\n\t%s" % (chat_id, ret))
 
     #Назад
-    elif text == 'назад':
+    elif (text == 'назад'):
         timetable_logger.error("Пользователь %s нажал кнопку 'назад'" % chat_id)
 
         BackToMain(chat_id)
