@@ -5,15 +5,11 @@ from telebot import types
 
 from DB_Helper.RedisHelper import set_state, get_current_state, get_message
 from DB_Helper.SQLHelper import SQLHelper
-
 from Serega.send_message import send_message
 from Serega.ToTheMain import BackToMain
-
 from Misc.message import Message
 from Misc.states import States
-
 from .markups import start_markup as m
-
 from config import bot
 
 start_logger = logging.getLogger('Bot.start_handle')

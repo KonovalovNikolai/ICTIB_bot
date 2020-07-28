@@ -2,16 +2,12 @@ import logging
 
 from DB_Helper.RedisHelper import set_state, get_current_state, delet_user, get_message
 from DB_Helper.SQLHelper import SQLHelper
-
 from Serega.send_message import send_message
 from Serega.ToTheMain import BackToMain
-
 from Misc.message import Message
 from Misc.states import States
-
 from .markups import yes_no_markup as m
 from telebot import types
-
 from config import bot
 
 clear_logger = logging.getLogger('Bot.clear_handle')

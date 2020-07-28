@@ -1,17 +1,13 @@
 import logging
 
-from DB_Helper.SQLHelper import SQLHelper
 from DB_Helper.RedisHelper import set_state, get_current_state, get_message
-
-from Serega.Timetable import GetTodayDate, GetTimetable
+from DB_Helper.SQLHelper import SQLHelper
 from Serega.send_message import send_message
+from Serega.Timetable import GetTodayDate, GetTimetable
 from Serega.ToTheMain import BackToMain
-
 from Misc.message import Message
 from Misc.states import States
-
 from .markups import day_choose_markup as m
-
 from config import bot
 
 timetable_logger = logging.getLogger('Bot.timetable_handle')
