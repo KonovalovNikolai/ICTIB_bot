@@ -10,6 +10,7 @@ from Serega.ToTheMain import BackToMain
 from Misc import message as M
 from Misc import states as S
 from Misc import buttons as B
+from Misc import users as U
 from .markups import start_markup as m
 from config import bot
 
@@ -33,7 +34,7 @@ def command_handler(message):
     else:
         start_logger.error('Пользователь %s начал регистрацию' % chat_id)
         send_message(chat_id= chat_id, 
-                    text = get_message(M.Start_Greetings) ,
+                    text = get_message(M.START_GREETINGS) ,
                     reply_markup=m.start_markup_kb)
         set_state(chat_id, S.START)
 
@@ -50,35 +51,35 @@ def user_entering_type(message):
     chat_id = message.chat.id
     text = message.text.lower()
     
-    if (text == B.Start_Stud.lower()):
+    if (text == B.START_STUD.lower()):
         send_message(chat_id= chat_id, 
-                    text= get_message(M.Start_Student) , 
+                    text= get_message(M.START_STUDENT) , 
                     reply_markup = types.ReplyKeyboardRemove())
 
         start_logger.error('Пользователь %s продолжил регистрацию как студент' % chat_id)
         
         set_state(chat_id, S.START_STUD)
 
-    elif (text == B.Start_Teach.lower()):
+    elif (text == B.START_TEACH.lower()):
         bot.send_message(chat_id= chat_id,
-                        text= get_message(M.Start_Teacher) ,
+                        text= get_message(M.START_TEACHER) ,
                         reply_markup = types.ReplyKeyboardRemove())
 
         start_logger.error('Пользователь %s продолжил регистрацию как препод' % chat_id)
         
         set_state(chat_id, S.START_TEACH)
 
-    elif (text == B.Start_Abitur.lower()):
-        BackToMain(chat_id, get_message(M.Start_Abiturient))
+    elif (text == B.START_ABITUR.lower()):
+        BackToMain(chat_id, get_message(M.START_ABITUR))
 
         db_worker = SQLHelper()
-        db_worker.AddUser(user = (chat_id, "abiturient", "abiturient",0))
+        db_worker.AddUser(user = (chat_id, U.ABITUR, U.ABITUR, 0))
         db_worker.close()
 
         start_logger.error('Пользователь %s зарегистрировался как абитуриент' % chat_id)
 
     else:
-        send_message(chat_id, get_message(M.Error_Wrong_Choice))
+        send_message(chat_id, get_message(M.ERROR_WRONG_CHOICE))
 
         start_logger.error("Пользователь %s сделал неправильный выбор: %s" % (chat_id, text))
 
@@ -97,16 +98,16 @@ def user_entering_stud_group(message):
         start_logger.error('Пользователь %s ввёл свою группу: %s' % (chat_id, text))
 
         db_worker = SQLHelper()
-        db_worker.AddUser(user = (chat_id, "stud", text, 0))
+        db_worker.AddUser(user = (chat_id, U.STUDENT, text, 0))
         db_worker.close()
         
-        BackToMain(chat_id, get_message(M.Start_thanks))
+        BackToMain(chat_id, get_message(M.START_THANKS))
     
     else:
         start_logger.error("Пользователь %s неправильно ввёл группу: %s" % (chat_id, text))
         
         send_message(chat_id = chat_id,
-                        text= get_message(M.Error_Wrong_Input))
+                        text= get_message(M.ERROR_WRONG_INPUT))
 
 #Запись имени препада
 @bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.START_TEACH)
@@ -123,13 +124,13 @@ def user_entering_tech_name(message):
         start_logger.error('Пользователь %s ввёл инициалы: %s' % (chat_id, text))
 
         db_worker = SQLHelper()
-        db_worker.AddUser(user = (chat_id, "teach", text,0))
+        db_worker.AddUser(user = (chat_id, U.TEACH, text,0))
         db_worker.close()
         
-        BackToMain(chat_id, get_message(M.Start_thanks))
+        BackToMain(chat_id, get_message(M.START_THANKS))
     
     else:
         start_logger.error("Пользователь %s некорректно ввёл инициалы: %s" % (chat_id, text))
 
         send_message(chat_id = chat_id,
-                        text= get_message(M.Error_Wrong_Input) )
+                        text= get_message(M.ERROR_WRONG_INPUT))

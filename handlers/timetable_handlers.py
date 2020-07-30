@@ -8,6 +8,7 @@ from Serega.ToTheMain import BackToMain
 from Misc import message as M
 from Misc import buttons as B
 from Misc import states as S
+from Misc import users as U
 from .markups import day_choose_markup as m
 from config import bot
 
@@ -25,7 +26,7 @@ day_to_number = {
 
 #Обработка нажатия кнопки "расписание"
 @bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.NORMAL
-                        and message.text.lower() == B.Main_Menu_TTable.lower())
+                        and message.text.lower() == B.MAIN_MENU_TTABLE.lower())
 def choose_day(message):
     """
     Только из начального состояния.
@@ -42,10 +43,10 @@ def choose_day(message):
     db_worker.close()
 
     #Если пользователь не абитуриент, то выводим календарь
-    if (user_type != "abiturient"):
+    if (user_type != U.ABITUR):
         date = GetTodayDate(0) #Сегоднящняя дата
         send_message(chat_id=chat_id,
-                        text= get_message(M.TimeTable_Today).format(date),
+                        text= get_message(M.TIMETABLE_TODAY).format(date),
                         reply_markup=m.day_choose_kb)
         
         timetable_logger.error("Пользователь %s получил клавиатуру расписания" % chat_id)
@@ -81,7 +82,7 @@ def send_timetable(message):
         BackToMain(chat_id)
         
     #Авторасписание
-    elif (text == B.Auto_Table.lower()):
+    elif (text == B.AUTO_TABLE.lower()):
         #Меняем параметр авторасписания в бд
         db_worker = SQLHelper()
         ret = db_worker.UpdateAuto(chat_id)
@@ -94,7 +95,7 @@ def send_timetable(message):
         timetable_logger.error("Пользователь %s изменил параметр авторасписания:\n\t%s" % (chat_id, ret))
 
     #Назад
-    elif (text == B.Back.lower()):
+    elif (text == B.BACK.lower()):
         timetable_logger.error("Пользователь %s нажал кнопку 'назад'" % chat_id)
 
         BackToMain(chat_id)
@@ -103,4 +104,4 @@ def send_timetable(message):
     else:
         timetable_logger.error("Пользователь %s сделал неправильный выбор: %s" % (chat_id, text))
         send_message(chat_id = chat_id,
-                    text= get_message(M.Error_Wrong_Choice))
+                    text= get_message(M.ERROR_WRONG_CHOICE))

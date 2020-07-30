@@ -3,6 +3,7 @@ from DB_Helper.SQLHelper import SQLHelper
 from handlers.markups import main_markup as m
 from Serega.send_message import send_message
 from Misc import states as S
+from Misc import users as U
 import logging
 
 logger = logging.getLogger('Bot.ToTheMain')
@@ -21,20 +22,20 @@ def BackToMain(chat_id, text = "\U0001f3e0 Главное меню."):
     db_worker.close()
     
     #Отправляем текст сообщения
-    if user_type == "stud":
+    if user_type == U.STUDENT:
         send_message(chat_id= chat_id,
                         text= text,
                         reply_markup=m.main_markup_stud_kb)
 
         logger.error("Пользователь %s вернулся в главное меню как студент" % chat_id)
 
-    elif user_type == "teach":
+    elif user_type == U.TEACH:
         send_message(chat_id= chat_id,
                         text= text,
                         reply_markup=m.main_markup_teach_kb)
         logger.error("Пользователь %s вернулся в главное меню как препод" % chat_id)
 
-    elif user_type == "abiturient":
+    elif user_type == U.ABITUR:
         send_message(chat_id= chat_id,
                         text= text,
                         reply_markup=m.main_markup_abiturient_kb)

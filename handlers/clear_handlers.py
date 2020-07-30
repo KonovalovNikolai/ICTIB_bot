@@ -26,7 +26,7 @@ def command_handler(message):
 
     #Отправить клавиатуру потверждения
     send_message(chat_id = chat_id,
-                text = get_message(M.Clear_Сonfirmation),
+                text = get_message(M.CLEAR_СONFIRMATION),
                 reply_markup = m.yes_no_kb)
 
     clear_logger.error("Пользователь %s получил клавиатуру для потверждения удаления" % chat_id)
@@ -43,9 +43,9 @@ def user_entering_type(message):
     chat_id = message.chat.id
     text = message.text.lower()
 
-    if (text == B.Yes.lower()):
+    if (text == B.YES.lower()):
         send_message(chat_id = chat_id,
-                    text = get_message(M.Clear_Bye),
+                    text = get_message(M.CLEAR_BYE),
                     reply_markup = types.ReplyKeyboardRemove())
 
         #Удаление пользователя из sqlite
@@ -57,13 +57,13 @@ def user_entering_type(message):
 
         clear_logger.error("Пользователь %s потвердил удаление" % chat_id)
     
-    elif (text == B.No.lower()):
-        BackToMain(chat_id, get_message(M.Clear_Cancel))
+    elif (text == B.NO.lower()):
+        BackToMain(chat_id, get_message(M.CLEAR_CANCEL))
 
         clear_logger.error("Пользователь %s отменил удаление" % chat_id)
     
     else:
         send_message(chat_id = chat_id,
-                    text = get_message(M.Error_Wrong_Choice))
+                    text = get_message(M.ERROR_WRONG_CHOICE))
 
         clear_logger.error("Пользователь %s сделал неправильный выбор: %s" % (chat_id, text))

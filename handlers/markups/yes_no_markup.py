@@ -1,6 +1,6 @@
 from telebot import types
+from Misc import buttons as B
 
 yes_no_kb =types.ReplyKeyboardMarkup(resize_keyboard= True)
-btn_yes = types.KeyboardButton("Да")
-btn_no = types.KeyboardButton("Нет")
-yes_no_kb.add(btn_yes, btn_no)
+
+yes_no_kb.add(B.YES, B.NO)

@@ -5,4 +5,4 @@ from Misc import buttons as B
 #Спрашиваем тип пользователя
 start_markup_kb = types.ReplyKeyboardMarkup(resize_keyboard= True, row_width= 1)
 
-start_markup_kb.add(B.Start_Stud, B.Start_Teach, B.Start_Abitur)
+start_markup_kb.add(B.START_STUD, B.START_TEACH, B.START_ABITUR)
