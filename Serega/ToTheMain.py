@@ -2,7 +2,7 @@ from DB_Helper.RedisHelper import set_state, get_current_state
 from DB_Helper.SQLHelper import SQLHelper
 from handlers.markups import main_markup as m
 from Serega.send_message import send_message
-from Misc.states import States
+from Misc import states as S
 import logging
 
 logger = logging.getLogger('Bot.ToTheMain')
@@ -41,4 +41,4 @@ def BackToMain(chat_id, text = "\U0001f3e0 Главное меню."):
         logger.error("Пользователь %s вернулся в главное меню как абитуриент" % chat_id)
     
     #Меняем состояние пользователя
-    set_state(chat_id, States.S_NORMAL.value)
+    set_state(chat_id, S.NORMAL)

@@ -4,18 +4,18 @@ from DB_Helper.RedisHelper import set_state, get_current_state, delet_user, get_
 from DB_Helper.SQLHelper import SQLHelper
 from Serega.send_message import send_message
 from Serega.ToTheMain import BackToMain
-from Misc.message import Message
-from Misc.states import States
+from Misc import message as M
+from Misc import buttons as B
+from Misc import states as S
 from .markups import yes_no_markup as m
 from telebot import types
 from config import bot
 
 clear_logger = logging.getLogger('Bot.clear_handle')
 
-
 #Обработка команды "clear"
 @bot.message_handler(commands = ['clear'],
-                    func = lambda message: get_current_state(message.chat.id) == States.S_NORMAL.value)
+                    func = lambda message: get_current_state(message.chat.id) == S.NORMAL)
 def command_handler(message):
     """
     Rоманда удаления пользователя из базы данных
@@ -26,15 +26,15 @@ def command_handler(message):
 
     #Отправить клавиатуру потверждения
     send_message(chat_id = chat_id,
-                text = get_message(Message.M_Clear_Сonfirmation.value),
+                text = get_message(M.Clear_Сonfirmation),
                 reply_markup = m.yes_no_kb)
 
     clear_logger.error("Пользователь %s получил клавиатуру для потверждения удаления" % chat_id)
 
-    set_state(chat_id, States.S_CLEAR.value)
+    set_state(chat_id, S.CLEAR)
 
 #Обработка подверждения
-@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == States.S_CLEAR.value)
+@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.CLEAR)
 def user_entering_type(message):
     """
     Обработка клавиатуры для потверждения удаления
@@ -43,9 +43,9 @@ def user_entering_type(message):
     chat_id = message.chat.id
     text = message.text.lower()
 
-    if (text == "да"):
+    if (text == B.Yes.lower()):
         send_message(chat_id = chat_id,
-                    text = get_message(Message.M_Clear_Bye.value),
+                    text = get_message(M.Clear_Bye),
                     reply_markup = types.ReplyKeyboardRemove())
 
         #Удаление пользователя из sqlite
@@ -57,13 +57,13 @@ def user_entering_type(message):
 
         clear_logger.error("Пользователь %s потвердил удаление" % chat_id)
     
-    elif (text == "нет"):
-        BackToMain(chat_id, get_message(Message.M_Clear_Cancel.value))
+    elif (text == B.No.lower()):
+        BackToMain(chat_id, get_message(M.Clear_Cancel))
 
         clear_logger.error("Пользователь %s отменил удаление" % chat_id)
     
     else:
         send_message(chat_id = chat_id,
-                    text = get_message(Message.M_Error_Wrong_Choice.value))
+                    text = get_message(M.Error_Wrong_Choice))
 
         clear_logger.error("Пользователь %s сделал неправильный выбор: %s" % (chat_id, text))

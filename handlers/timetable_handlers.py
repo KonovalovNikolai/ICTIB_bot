@@ -5,8 +5,9 @@ from DB_Helper.SQLHelper import SQLHelper
 from Serega.send_message import send_message
 from Serega.Timetable import GetTodayDate, GetTimetable
 from Serega.ToTheMain import BackToMain
-from Misc.message import Message
-from Misc.states import States
+from Misc import message as M
+from Misc import buttons as B
+from Misc import states as S
 from .markups import day_choose_markup as m
 from config import bot
 
@@ -23,8 +24,8 @@ day_to_number = {
 }
 
 #Обработка нажатия кнопки "расписание"
-@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == States.S_NORMAL.value
-                        and message.text.lower() == "расписание")
+@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.NORMAL
+                        and message.text.lower() == B.Main_Menu_TTable.lower())
 def choose_day(message):
     """
     Только из начального состояния.
@@ -44,16 +45,16 @@ def choose_day(message):
     if (user_type != "abiturient"):
         date = GetTodayDate(0) #Сегоднящняя дата
         send_message(chat_id=chat_id,
-                        text= get_message(Message.M_TimeTable_Today.value).format(date),
+                        text= get_message(M.TimeTable_Today).format(date),
                         reply_markup=m.day_choose_kb)
         
         timetable_logger.error("Пользователь %s получил клавиатуру расписания" % chat_id)
 
         #Меняем тип пользователя
-        set_state(chat_id, States.S_TIMETABLE.value)
+        set_state(chat_id, S.TIMETABLE)
 
 #Обработка клавиатуры расписания
-@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == States.S_TIMETABLE.value)
+@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.TIMETABLE)
 def send_timetable(message):
     """
     Хэндлер для обработки клавиатуры расписания
@@ -80,7 +81,7 @@ def send_timetable(message):
         BackToMain(chat_id)
         
     #Авторасписание
-    elif (text == 'авторасписание'):
+    elif (text == B.Auto_Table.lower()):
         #Меняем параметр авторасписания в бд
         db_worker = SQLHelper()
         ret = db_worker.UpdateAuto(chat_id)
@@ -93,7 +94,7 @@ def send_timetable(message):
         timetable_logger.error("Пользователь %s изменил параметр авторасписания:\n\t%s" % (chat_id, ret))
 
     #Назад
-    elif (text == 'назад'):
+    elif (text == B.Back.lower()):
         timetable_logger.error("Пользователь %s нажал кнопку 'назад'" % chat_id)
 
         BackToMain(chat_id)
@@ -102,4 +103,4 @@ def send_timetable(message):
     else:
         timetable_logger.error("Пользователь %s сделал неправильный выбор: %s" % (chat_id, text))
         send_message(chat_id = chat_id,
-                    text= get_message(Message.M_Error_Wrong_Choice.value))
+                    text= get_message(M.Error_Wrong_Choice))

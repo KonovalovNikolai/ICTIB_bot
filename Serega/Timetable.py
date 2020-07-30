@@ -1,6 +1,6 @@
 from DB_Helper.SQLHelper import SQLHelper
 from DB_Helper.RedisHelper import get_message
-from Misc.message import Message
+from Misc import message as M
 import requests
 import logging
 import arrow
@@ -47,14 +47,14 @@ def GetTimetable(name, day):
     except:
         #Если не получилось обратиться к серверу, то он не доступен
         logger.error("Failed to connect to resource: %s" % name)
-        return get_message(Message.M_TimeTable_NoConection.value) #Сообщение о неудачном подключении
+        return get_message(M.TimeTable_NoConection) #Сообщение о неудачном подключении
 
     timetable = json.loads(response.text) #загружаем ответ в типы Python
     
     #Проверка не пустое ли расписание
     if 'result' in timetable:
         logger.error("No timetable for this group: %s" % name)
-        return get_message(Message.M_TimeTable_WrongGroup.value)
+        return get_message(M.TimeTable_WrongGroup)
 
     #date = arrow.get(datetime.datetime(2020, 2, 12), 'US/Pacific').shift(weekday = day, hours = 3)
     date = arrow.utcnow().shift(weekday = day, hours = 3) #Дата занятий
@@ -85,7 +85,7 @@ def GetTimetable(name, day):
         else:
             #Нет расписания на следующую неделю
             logger.error("No timetable for this day: %s" % day)
-            return get_message(Message.M_TimeTable_NoTable.value)
+            return get_message(M.TimeTable_NoTable)
     
     #Если даты совпали, то парсим расписание
     if(flag):
@@ -104,4 +104,4 @@ def GetTimetable(name, day):
             return 'Расписание на {}.\nЗанятий нет\n'.format(date.format("D MMMM, dddd", locale = "ru"))
     else:
         #Если не совпадали, то расписание на этот день нет
-        return get_message(Message.M_TimeTable_NoTable.value)
+        return get_message(M.TimeTable_NoTable)

@@ -1,6 +1,6 @@
 import redis
 
-r = redis.Redis(db=1, password='QzEcTb123789')
+r = redis.Redis(db=1)
 
 A = {
         '0' : 'Главное меню',
