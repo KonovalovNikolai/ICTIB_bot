@@ -35,7 +35,8 @@ class SQLHelper:
     def UpdateAuto(self, chat_id):
         sql = "SELECT auto FROM user WHERE id=?"
         self.cursor.execute(sql, [chat_id])
-        if self.cursor.fetchone() == 0:
+        
+        if self.cursor.fetchone()[0] == 0:
             sql = "UPDATE user SET auto = 1 WHERE id=?"
             self.cursor.execute(sql, [chat_id])
             self.connection.commit()
