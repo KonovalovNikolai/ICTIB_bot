@@ -13,3 +13,5 @@ main_markup_abiturient_kb = types.ReplyKeyboardMarkup(resize_keyboard= True)
 main_markup_stud_kb.row(B.MAIN_MENU_TTABLE)
 
 main_markup_teach_kb.row(B.MAIN_MENU_TTABLE)
+
+main_markup_abiturient_kb.row(B.QUESTION)

@@ -1,6 +1,6 @@
 import sqlite3
 
-database_name = "user_database.db"
+database_name = "database.db"
 
 class SQLHelper:
     # При создании класса подключаемся к БД

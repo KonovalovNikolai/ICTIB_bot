@@ -61,7 +61,7 @@ def user_entering_type(message):
         set_state(chat_id, S.START_STUD)
 
     elif (text == B.START_TEACH.lower()):
-        bot.send_message(chat_id= chat_id,
+        send_message(chat_id= chat_id,
                         text= get_message(M.START_TEACHER) ,
                         reply_markup = types.ReplyKeyboardRemove())
 
@@ -70,11 +70,11 @@ def user_entering_type(message):
         set_state(chat_id, S.START_TEACH)
 
     elif (text == B.START_ABITUR.lower()):
-        BackToMain(chat_id, get_message(M.START_ABITUR))
-
         db_worker = SQLHelper()
         db_worker.AddUser(user = (chat_id, U.ABITUR, U.ABITUR, 0))
         db_worker.close()
+
+        BackToMain(chat_id, get_message(M.START_ABITUR))
 
         start_logger.error('Пользователь %s зарегистрировался как абитуриент' % chat_id)
 

@@ -8,7 +8,7 @@ import logging
 
 logger = logging.getLogger('Bot.ToTheMain')
 
-def BackToMain(chat_id, text = "\U0001f3e0 Главное меню."):
+def BackToMain(chat_id, text = "🏠 Главное меню."):
     """
     Функция для возврата пользователя в главное меню учитывая его тип.
     chat_id - id пользователя

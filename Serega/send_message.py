@@ -1,4 +1,5 @@
 from config import bot
+from DB_Helper.RedisHelper import get_message
 import time
 
 def send_message(chat_id, text, reply_markup=None):
@@ -15,5 +16,5 @@ def send_message(chat_id, text, reply_markup=None):
     except:
         #Если поймали ошибку, то ждём 5 секунд и пробуем ещё раз
         time.sleep(3)
-        send_message(chat_id = chat_id, text = text)
+        send_message(chat_id = chat_id, text = text, reply_markup= reply_markup)
         
