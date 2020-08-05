@@ -41,9 +41,9 @@ def user_entering_type(message):
     Только из состояния удаления
     """
     chat_id = message.chat.id
-    text = message.text.lower()
+    text = message.text
 
-    if (text == B.YES.lower()):
+    if (text == B.YES):
         send_message(chat_id = chat_id,
                     text = get_message(M.CLEAR_BYE),
                     reply_markup = types.ReplyKeyboardRemove())
@@ -57,7 +57,7 @@ def user_entering_type(message):
 
         clear_logger.error("Пользователь %s потвердил удаление" % chat_id)
     
-    elif (text == B.NO.lower()):
+    elif (text == B.NO):
         BackToMain(chat_id, get_message(M.CLEAR_CANCEL))
 
         clear_logger.error("Пользователь %s отменил удаление" % chat_id)

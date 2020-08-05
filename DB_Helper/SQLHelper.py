@@ -53,8 +53,12 @@ class SQLHelper:
         return self.cursor.fetchall()
 
     def DeleteUser(self, chat_id):
-        sql = "DELETE FROM user WHERE id=?"
-        self.cursor.execute(sql, [chat_id])
+        sql1 = 'DELETE FROM user WHERE id=?'
+        sql2 = 'DELETE FROM tt_alerts WHERE user_id=?'
+        sql3 = 'DELETE FROM questions WHERE user_id=?'
+        self.cursor.execute(sql1, [chat_id])
+        self.cursor.execute(sql2, [chat_id])
+        self.cursor.execute(sql3, [chat_id])
         self.connection.commit()  # обновление таблицы БД
 
     # Не забудь закрыть БД!

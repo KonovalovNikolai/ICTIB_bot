@@ -26,7 +26,7 @@ day_to_number = {
 
 #Обработка нажатия кнопки "расписание"
 @bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.NORMAL
-                        and message.text.lower() == B.MAIN_MENU_TTABLE.lower())
+                        and message.text == B.MAIN_MENU_TTABLE)
 def choose_day(message):
     """
     Только из начального состояния.
@@ -93,12 +93,6 @@ def send_timetable(message):
         BackToMain(chat_id)
 
         timetable_logger.error("Пользователь %s изменил параметр авторасписания:\n\t%s" % (chat_id, ret))
-
-    #Назад
-    elif (text == B.BACK.lower()):
-        timetable_logger.error("Пользователь %s нажал кнопку 'назад'" % chat_id)
-
-        BackToMain(chat_id)
 
     #Ничего из предложенного
     else:

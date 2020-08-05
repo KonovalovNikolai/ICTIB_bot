@@ -7,4 +7,8 @@ TIMETABLE = "4"
 
 LOCATION = "5"
 
+QUESTION = "6"
+
+SETTINGS = "8"
+
 CLEAR = "7"
