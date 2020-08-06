@@ -47,6 +47,35 @@ class SQLHelper:
             self.connection.commit()
             return "Авто расписание выключено."
 
+    def CheckUserQuest(self, chat_id):
+        sql = "SELECT * FROM questions WHERE user_id=?"  # SQL запрос
+        self.cursor.execute(sql, [chat_id])  # проверям записан ли уже пользователь
+        if self.cursor.fetchone():
+            return True
+        return False
+    
+    def AddQuest(self, chat_id, message_id, text):
+        sql = "INSERT INTO questions VALUES (?,?,?)"
+        self.cursor.execute(sql, [chat_id, message_id, text])
+        self.connection.commit()
+
+    def TakeQuest(self, chat_id):
+        sql = 'SELECT question_id, message FROM questions WHERE user_id=?'
+        self.cursor.execute(sql, [chat_id])
+        self.connection.commit()
+        quest = self.cursor.fetchone()
+
+        if(quest):
+            return 'Вопрос №{}\n{}'.format(*quest)
+        else:
+            return None
+
+    def DeleteQuest(self, chat_id):
+        sql = 'DELETE FROM questions WHERE user_id=?'
+        self.cursor.execute(sql, [chat_id])
+        self.connection.commit()
+
+
     #выполнить sql запрос
     def Execute(self, sql):
         self.cursor.execute(sql)

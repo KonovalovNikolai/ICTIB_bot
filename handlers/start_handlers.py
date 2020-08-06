@@ -11,7 +11,7 @@ from Misc import message as M
 from Misc import states as S
 from Misc import buttons as B
 from Misc import users as U
-from .markups import start_markup as m
+from .Markups import start_markup_kb
 from config import bot
 
 start_logger = logging.getLogger('Bot.start_handle')
@@ -37,7 +37,7 @@ def command_handler(message):
         start_logger.error('Пользователь %s начал регистрацию' % chat_id)
         send_message(chat_id= chat_id, 
                     text = get_message(M.START_GREETINGS) ,
-                    reply_markup=m.start_markup_kb)
+                    reply_markup=start_markup_kb)
         set_state(chat_id, S.START)
 
     db_worker.close()

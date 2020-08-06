@@ -6,8 +6,7 @@ from DB_Helper.RedisHelper import set_state, get_current_state, get_message
 from DB_Helper.SQLHelper import SQLHelper
 from Serega.send_message import send_message
 from Serega.ToTheMain import BackToMain
-from .markups import yes_no_markup as m
-from .markups import start_markup as m1
+from .Markups import yes_no_kb, start_markup_kb
 from Misc import message as M
 from Misc import states as S
 from Misc import buttons as B
@@ -19,7 +18,6 @@ def create_setting_kb(user_info = []):
 
     if (user_info[1] == U.ABITUR):
         kb.add(B.TYPE + U.RU_ABITUR)
-        kb.add(B.YOUR_QUST)
     else:
         if (user_info[1] == U.STUDENT):
             kb.add(B.TYPE + U.RU_STUDENT)
@@ -60,19 +58,15 @@ def settings_menu(message):
     if (text == B.CONTACT):
         send_message(chat_id= chat_id,
                     text= 'Разработчик: @liz_zard')
-        BackToMain(chat_id)
     elif (text == B.INFO):
         send_message(chat_id= chat_id,
                     text= 'БОТ')
-        BackToMain(chat_id)
-    elif (text == B.YOUR_QUST):
-        pass
     elif (text == B.ALERTS):
         pass
     elif (text == B.DELETE):
         send_message(chat_id = chat_id,
                     text = get_message(M.CLEAR_СONFIRMATION),
-                    reply_markup = m.yes_no_kb)
+                    reply_markup = yes_no_kb)
 
         set_state(chat_id, S.CLEAR)
     elif (text.startswith(B.TYPE)):
@@ -81,7 +75,7 @@ def settings_menu(message):
         db.close()
         send_message(chat_id= chat_id,
                     text= 'Выберите тип пользователя.',
-                    reply_markup= m1.start_markup_kb)
+                    reply_markup= start_markup_kb)
         set_state(chat_id, S.START)
     elif (text.startswith(B.GROUP)):
         db = SQLHelper()

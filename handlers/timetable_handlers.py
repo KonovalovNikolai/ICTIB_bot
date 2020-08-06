@@ -9,7 +9,7 @@ from Misc import message as M
 from Misc import buttons as B
 from Misc import states as S
 from Misc import users as U
-from .markups import day_choose_markup as m
+from .Markups import day_choose_kb
 from config import bot
 
 timetable_logger = logging.getLogger('Bot.timetable_handle')
@@ -47,7 +47,7 @@ def choose_day(message):
         date = GetTodayDate(0) #Сегоднящняя дата
         send_message(chat_id=chat_id,
                         text= get_message(M.TIMETABLE_TODAY).format(date),
-                        reply_markup=m.day_choose_kb)
+                        reply_markup=day_choose_kb)
         
         timetable_logger.error("Пользователь %s получил клавиатуру расписания" % chat_id)
 

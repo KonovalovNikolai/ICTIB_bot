@@ -21,7 +21,6 @@ QUESTION = '❓ Задать вопрос'
 SETTINGS = '⚙️ Настройки'
 
 TYPE = 'Тип: '
-YOUR_QUST = 'Ваши вопросы'
 GROUP = 'Группа: '
 NAME = 'ФИО: '
 ALERTS = 'Напоминания'
