@@ -11,7 +11,7 @@ from Misc import message as M
 from Misc import states as S
 from Misc import buttons as B
 from Misc import users as U
-from .markups import start_markup as m
+from .Markups import start_markup_kb
 from config import bot
 
 start_logger = logging.getLogger('Bot.start_handle')
@@ -26,6 +26,8 @@ def command_handler(message):
     """
     chat_id = message.chat.id
 
+    print(message.message_id)
+
     db_worker = SQLHelper()
 
     if (db_worker.IsInBD(chat_id)):
@@ -35,7 +37,7 @@ def command_handler(message):
         start_logger.error('Пользователь %s начал регистрацию' % chat_id)
         send_message(chat_id= chat_id, 
                     text = get_message(M.START_GREETINGS) ,
-                    reply_markup=m.start_markup_kb)
+                    reply_markup=start_markup_kb)
         set_state(chat_id, S.START)
 
     db_worker.close()
@@ -49,9 +51,9 @@ def user_entering_type(message):
     Если он абитуриент, то регистрация заганчивается.
     """
     chat_id = message.chat.id
-    text = message.text.lower()
+    text = message.text
     
-    if (text == B.START_STUD.lower()):
+    if (text == B.START_STUD):
         send_message(chat_id= chat_id, 
                     text= get_message(M.START_STUDENT) , 
                     reply_markup = types.ReplyKeyboardRemove())
@@ -60,8 +62,8 @@ def user_entering_type(message):
         
         set_state(chat_id, S.START_STUD)
 
-    elif (text == B.START_TEACH.lower()):
-        bot.send_message(chat_id= chat_id,
+    elif (text == B.START_TEACH):
+        send_message(chat_id= chat_id,
                         text= get_message(M.START_TEACHER) ,
                         reply_markup = types.ReplyKeyboardRemove())
 
@@ -69,12 +71,12 @@ def user_entering_type(message):
         
         set_state(chat_id, S.START_TEACH)
 
-    elif (text == B.START_ABITUR.lower()):
-        BackToMain(chat_id, get_message(M.START_ABITUR))
-
+    elif (text == B.START_ABITUR):
         db_worker = SQLHelper()
         db_worker.AddUser(user = (chat_id, U.ABITUR, U.ABITUR, 0))
         db_worker.close()
+
+        BackToMain(chat_id, get_message(M.START_ABITUR))
 
         start_logger.error('Пользователь %s зарегистрировался как абитуриент' % chat_id)
 
