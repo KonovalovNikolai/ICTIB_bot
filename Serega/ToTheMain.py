@@ -1,9 +1,9 @@
 from DB_Helper.RedisHelper import set_state, get_current_state
 from DB_Helper.SQLHelper import SQLHelper
 from handlers.Markups import main_markup_abiturient_kb, main_markup_stud_kb, main_markup_teach_kb
-from Serega.send_message import send_message
 from Misc import states as S
 from Misc import users as U
+from config import bot
 import logging
 
 logger = logging.getLogger('Bot.ToTheMain')
@@ -23,20 +23,20 @@ def BackToMain(chat_id, text = "🏠 Главное меню."):
     
     #Отправляем текст сообщения
     if user_type == U.STUDENT:
-        send_message(chat_id= chat_id,
+        bot.send_message(chat_id= chat_id,
                         text= text,
                         reply_markup=main_markup_stud_kb)
 
         logger.error("Пользователь %s вернулся в главное меню как студент" % chat_id)
 
     elif user_type == U.TEACH:
-        send_message(chat_id= chat_id,
+        bot.send_message(chat_id= chat_id,
                         text= text,
                         reply_markup=main_markup_teach_kb)
         logger.error("Пользователь %s вернулся в главное меню как препод" % chat_id)
 
     elif user_type == U.ABITUR:
-        send_message(chat_id= chat_id,
+        bot.send_message(chat_id= chat_id,
                         text= text,
                         reply_markup=main_markup_abiturient_kb)
         logger.error("Пользователь %s вернулся в главное меню как абитуриент" % chat_id)

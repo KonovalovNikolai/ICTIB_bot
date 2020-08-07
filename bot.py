@@ -1,6 +1,7 @@
 import logging
 import threading
 
+import handlers
 from config import bot
 from Serega import Kludge
 
