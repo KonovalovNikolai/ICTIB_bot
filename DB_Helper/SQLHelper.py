@@ -31,7 +31,6 @@ class SQLHelper:
         self.cursor.execute(sql, [chat_id])
         return self.cursor.fetchone()
 
-    #Включить/отключить автораспсиание пользователя
     def UpdateAuto(self, chat_id):
         sql = "SELECT auto FROM user WHERE id=?"
         self.cursor.execute(sql, [chat_id])

@@ -3,7 +3,6 @@ import threading
 
 from config import bot
 from Serega import Kludge
-import handlers
 
 def main():
     logger = logging.getLogger('Bot')
