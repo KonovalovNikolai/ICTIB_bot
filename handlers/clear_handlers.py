@@ -3,9 +3,7 @@ import logging
 from DB_Helper.RedisHelper import set_state, get_current_state, delet_user, get_message
 from DB_Helper.SQLHelper import SQLHelper
 from Serega.ToTheMain import BackToMain
-from Misc import message as M
-from Misc import buttons as B
-from Misc import states as S
+from Misc import M, B, S
 from .Markups import yes_no_kb
 from telebot import types
 from config import bot

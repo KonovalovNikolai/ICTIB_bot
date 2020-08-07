@@ -3,7 +3,6 @@ import threading
 
 import handlers
 from config import bot
-from Serega import Kludge
 
 def main():
     logger = logging.getLogger('Bot')
@@ -25,6 +24,4 @@ def main():
     bot.polling(none_stop=True)
 
 if __name__ == "__main__":
-    thread = threading.Thread(target=Kludge.Kludge)
-    thread.start()
     main()

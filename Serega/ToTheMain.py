@@ -1,8 +1,7 @@
 from DB_Helper.RedisHelper import set_state, get_current_state
 from DB_Helper.SQLHelper import SQLHelper
 from handlers.Markups import main_markup_abiturient_kb, main_markup_stud_kb, main_markup_teach_kb
-from Misc import states as S
-from Misc import users as U
+from Misc import S, U
 from config import bot
 import logging
 

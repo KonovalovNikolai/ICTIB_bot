@@ -4,10 +4,7 @@ from DB_Helper.RedisHelper import set_state, get_current_state, get_message
 from DB_Helper.SQLHelper import SQLHelper
 from Serega.Timetable import GetTodayDate, GetTimetable
 from Serega.ToTheMain import BackToMain
-from Misc import message as M
-from Misc import buttons as B
-from Misc import states as S
-from Misc import users as U
+from Misc import *
 from .Markups import day_choose_kb
 from config import bot
 

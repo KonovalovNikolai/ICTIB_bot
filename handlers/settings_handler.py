@@ -6,10 +6,7 @@ from DB_Helper.RedisHelper import set_state, get_current_state, get_message
 from DB_Helper.SQLHelper import SQLHelper
 from Serega.ToTheMain import BackToMain
 from .Markups import yes_no_kb, start_markup_kb
-from Misc import message as M
-from Misc import states as S
-from Misc import buttons as B
-from Misc import users as U
+from Misc import *
 from config import bot
 
 def create_setting_kb(user_info = []):

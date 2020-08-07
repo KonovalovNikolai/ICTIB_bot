@@ -1,13 +1,11 @@
 import logging
 import pprint
 
+from Misc import *
 from DB_Helper.RedisHelper import set_state, get_current_state, get_message
 from DB_Helper.SQLHelper import SQLHelper
 from Serega.ToTheMain import BackToMain
-from Misc import message as M
-from Misc import states as S
-from Misc import buttons as B
-from Misc import users as U
+from Serega.Send_message import Send_message
 from .Markups import back_kb, del_quest_kb
 from config import bot
 
@@ -24,9 +22,9 @@ def ask_question(message):
     if (user_type == U.ABITUR):
         quest = db.TakeQuest(chat_id)
         if (quest):
-            bot.send_message(chat_id= chat_id,
-                        text= 'У вас уже есть заданный вопрос.\n' + quest,
-                        reply_markup=del_quest_kb)
+            Send_message(chat_id= chat_id,
+                        text= 'У вас уже есть заданный вопрос:\n<i>' + quest + '</i>',
+                        reply_markup=del_quest_kb, parse_mode='HTML')
         else:
             bot.send_message(chat_id= chat_id,
                         text= '''
