@@ -1,10 +1,14 @@
-from enum import Enum
+START = "0"
+START_TEACH = "2"
+START_STUD = "1"
+NORMAL = "3"
 
-class States(Enum):
-    S_START = "0"
-    S_START_STUD = "1"
-    S_START_TEACH = "2"
-    S_NORMAL = "3"
-    S_TIMETABLE = "4"
-    S_LOCATION = "5"
-    S_CLEAR = "7"
+TIMETABLE = "4"
+
+LOCATION = "5"
+
+QUESTION = "6"
+
+SETTINGS = "8"
+
+CLEAR = "7"
