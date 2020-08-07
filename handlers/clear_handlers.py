@@ -2,7 +2,6 @@ import logging
 
 from DB_Helper.RedisHelper import set_state, get_current_state, delet_user, get_message
 from DB_Helper.SQLHelper import SQLHelper
-from Serega.send_message import send_message
 from Serega.ToTheMain import BackToMain
 from Misc import message as M
 from Misc import buttons as B
@@ -25,7 +24,7 @@ def command_handler(message):
     chat_id = message.chat.id
 
     #Отправить клавиатуру потверждения
-    send_message(chat_id = chat_id,
+    bot.send_message(chat_id = chat_id,
                 text = get_message(M.CLEAR_СONFIRMATION),
                 reply_markup = yes_no_kb)
 
@@ -44,7 +43,7 @@ def user_entering_type(message):
     text = message.text
 
     if (text == B.YES):
-        send_message(chat_id = chat_id,
+        bot.send_message(chat_id = chat_id,
                     text = get_message(M.CLEAR_BYE),
                     reply_markup = types.ReplyKeyboardRemove())
 
@@ -63,7 +62,7 @@ def user_entering_type(message):
         clear_logger.error("Пользователь %s отменил удаление" % chat_id)
     
     else:
-        send_message(chat_id = chat_id,
+        bot.send_message(chat_id = chat_id,
                     text = get_message(M.ERROR_WRONG_CHOICE))
 
         clear_logger.error("Пользователь %s сделал неправильный выбор: %s" % (chat_id, text))

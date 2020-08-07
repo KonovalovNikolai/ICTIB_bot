@@ -4,7 +4,6 @@ from telebot import types
 
 from DB_Helper.RedisHelper import set_state, get_current_state, get_message
 from DB_Helper.SQLHelper import SQLHelper
-from Serega.send_message import send_message
 from Serega.ToTheMain import BackToMain
 from .Markups import yes_no_kb, start_markup_kb
 from Misc import message as M
@@ -45,7 +44,7 @@ def choose_settings(message):
 
     kb = create_setting_kb(user_info)
 
-    send_message(chat_id= chat_id,
+    bot.send_message(chat_id= chat_id,
                 text= 'Меню настроек',
                 reply_markup= kb)
     set_state(chat_id, S.SETTINGS)
@@ -56,15 +55,15 @@ def settings_menu(message):
     text = message.text
 
     if (text == B.CONTACT):
-        send_message(chat_id= chat_id,
+        bot.send_message(chat_id= chat_id,
                     text= 'Разработчик: @liz_zard')
     elif (text == B.INFO):
-        send_message(chat_id= chat_id,
+        bot.send_message(chat_id= chat_id,
                     text= 'БОТ')
     elif (text == B.ALERTS):
         pass
     elif (text == B.DELETE):
-        send_message(chat_id = chat_id,
+        bot.send_message(chat_id = chat_id,
                     text = get_message(M.CLEAR_СONFIRMATION),
                     reply_markup = yes_no_kb)
 
@@ -73,7 +72,7 @@ def settings_menu(message):
         db = SQLHelper()
         db.DeleteUser(chat_id)
         db.close()
-        send_message(chat_id= chat_id,
+        bot.send_message(chat_id= chat_id,
                     text= 'Выберите тип пользователя.',
                     reply_markup= start_markup_kb)
         set_state(chat_id, S.START)
@@ -82,7 +81,7 @@ def settings_menu(message):
         db.DeleteUser(chat_id)
         db.close()
 
-        send_message(chat_id= chat_id,
+        bot.send_message(chat_id= chat_id,
                     text= 'Введите вашу группу. Например, КТбо1-6.',
                     reply_markup= types.ReplyKeyboardRemove())
         set_state(chat_id, S.START_STUD)
@@ -91,10 +90,10 @@ def settings_menu(message):
         db.DeleteUser(chat_id)
         db.close()
 
-        send_message(chat_id= chat_id,
+        bot.send_message(chat_id= chat_id,
                     text= 'Введите ваше ФИО. Например, Иванов И. И.',
                     reply_markup= types.ReplyKeyboardRemove())
         set_state(chat_id, S.START_TEACH)
     else:
-        send_message(chat_id = chat_id,
+        bot.send_message(chat_id = chat_id,
                     text = get_message(M.ERROR_WRONG_CHOICE))
