@@ -3,7 +3,6 @@ import pprint
 
 from DB_Helper.RedisHelper import set_state, get_current_state, get_message
 from DB_Helper.SQLHelper import SQLHelper
-from Serega.send_message import send_message
 from Serega.ToTheMain import BackToMain
 from Misc import message as M
 from Misc import states as S
@@ -25,11 +24,11 @@ def ask_question(message):
     if (user_type == U.ABITUR):
         quest = db.TakeQuest(chat_id)
         if (quest):
-            send_message(chat_id= chat_id,
+            bot.send_message(chat_id= chat_id,
                         text= 'У вас уже есть заданный вопрос.\n' + quest,
                         reply_markup=del_quest_kb)
         else:
-            send_message(chat_id= chat_id,
+            bot.send_message(chat_id= chat_id,
                         text= '''
 Всё, что вы хотели знать об институте, но боялись спросить.\n
 Теперь абитуриенты могут задавать вопросы студентам, при этом сохраняя анонимность.
@@ -49,7 +48,7 @@ def writing_quest(message):
     db.AddQuest(chat_id, message.message_id, text)
     db.close()
 
-    send_message(chat_id= chat_id,
+    bot.send_message(chat_id= chat_id,
                 text= 'Я записал ваш вопрос. Скоро на него ответят.')
     BackToMain(chat_id)
 

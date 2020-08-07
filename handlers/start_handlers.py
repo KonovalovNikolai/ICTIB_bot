@@ -5,7 +5,6 @@ from telebot import types
 
 from DB_Helper.RedisHelper import set_state, get_current_state, get_message
 from DB_Helper.SQLHelper import SQLHelper
-from Serega.send_message import send_message
 from Serega.ToTheMain import BackToMain
 from Misc import message as M
 from Misc import states as S
@@ -35,7 +34,7 @@ def command_handler(message):
         BackToMain(chat_id, "Интерфейс обновлён.") #ответ пользователю
     else:
         start_logger.error('Пользователь %s начал регистрацию' % chat_id)
-        send_message(chat_id= chat_id, 
+        bot.send_message(chat_id= chat_id, 
                     text = get_message(M.START_GREETINGS) ,
                     reply_markup=start_markup_kb)
         set_state(chat_id, S.START)
@@ -54,7 +53,7 @@ def user_entering_type(message):
     text = message.text
     
     if (text == B.START_STUD):
-        send_message(chat_id= chat_id, 
+        bot.send_message(chat_id= chat_id, 
                     text= get_message(M.START_STUDENT) , 
                     reply_markup = types.ReplyKeyboardRemove())
 
@@ -63,7 +62,7 @@ def user_entering_type(message):
         set_state(chat_id, S.START_STUD)
 
     elif (text == B.START_TEACH):
-        send_message(chat_id= chat_id,
+        bot.send_message(chat_id= chat_id,
                         text= get_message(M.START_TEACHER) ,
                         reply_markup = types.ReplyKeyboardRemove())
 
@@ -81,7 +80,7 @@ def user_entering_type(message):
         start_logger.error('Пользователь %s зарегистрировался как абитуриент' % chat_id)
 
     else:
-        send_message(chat_id, get_message(M.ERROR_WRONG_CHOICE))
+        bot.send_message(chat_id, get_message(M.ERROR_WRONG_CHOICE))
 
         start_logger.error("Пользователь %s сделал неправильный выбор: %s" % (chat_id, text))
 
@@ -108,7 +107,7 @@ def user_entering_stud_group(message):
     else:
         start_logger.error("Пользователь %s неправильно ввёл группу: %s" % (chat_id, text))
         
-        send_message(chat_id = chat_id,
+        bot.send_message(chat_id = chat_id,
                         text= get_message(M.ERROR_WRONG_INPUT))
 
 #Запись имени препада
@@ -134,5 +133,5 @@ def user_entering_tech_name(message):
     else:
         start_logger.error("Пользователь %s некорректно ввёл инициалы: %s" % (chat_id, text))
 
-        send_message(chat_id = chat_id,
+        bot.send_message(chat_id = chat_id,
                         text= get_message(M.ERROR_WRONG_INPUT))
