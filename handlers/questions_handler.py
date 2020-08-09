@@ -24,16 +24,18 @@ def ask_question(message):
         if (quest):
             Send_message(chat_id= chat_id,
                         text= 'У вас уже есть заданный вопрос:\n<i>' + quest + '</i>',
-                        reply_markup=del_quest_kb, parse_mode='HTML')
+                        reply_markup=del_quest_kb, parse_mode='HTML',
+                        raw=False)
         else:
-            bot.send_message(chat_id= chat_id,
+            Send_message(chat_id= chat_id,
                         text= '''
 Всё, что вы хотели знать об институте, но боялись спросить.\n
 Теперь абитуриенты могут задавать вопросы студентам, при этом сохраняя анонимность.
 Просто напишите мне ваш вопрос, а я найду студента, который ответит на ваш вопрос.
 Пожалуйста, соблюдайте правила приличия, задавая вопрос.
 Также убедитесь, что ответа на ваш вопрос нет в разделе "Частые вопросы".''',
-                        reply_markup= back_kb)
+                        reply_markup= back_kb,
+                        raw=False)
             set_state(chat_id, S.QUESTION)
     db.close()
 
@@ -46,8 +48,9 @@ def writing_quest(message):
     db.AddQuest(chat_id, message.message_id, text)
     db.close()
 
-    bot.send_message(chat_id= chat_id,
-                text= 'Я записал ваш вопрос. Скоро на него ответят.')
+    Send_message(chat_id= chat_id,
+                text= 'Я записал ваш вопрос. Скоро на него ответят.',
+                raw=False)
     BackToMain(chat_id)
 
 @bot.callback_query_handler(func = lambda call: call.data == 'DeleteQuestion')

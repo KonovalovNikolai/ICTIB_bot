@@ -1,6 +1,7 @@
 from DB_Helper.RedisHelper import set_state, get_current_state
 from DB_Helper.SQLHelper import SQLHelper
 from handlers.Markups import main_markup_abiturient_kb, main_markup_stud_kb, main_markup_teach_kb
+from .Send_message import Send_message
 from Misc import S, U
 from config import bot
 import logging
@@ -22,22 +23,25 @@ def BackToMain(chat_id, text = "🏠 Главное меню."):
     
     #Отправляем текст сообщения
     if user_type == U.STUDENT:
-        bot.send_message(chat_id= chat_id,
+        Send_message(chat_id= chat_id,
                         text= text,
-                        reply_markup=main_markup_stud_kb)
+                        reply_markup=main_markup_stud_kb,
+                        raw=False)
 
         logger.error("Пользователь %s вернулся в главное меню как студент" % chat_id)
 
     elif user_type == U.TEACH:
-        bot.send_message(chat_id= chat_id,
+        Send_message(chat_id= chat_id,
                         text= text,
-                        reply_markup=main_markup_teach_kb)
+                        reply_markup=main_markup_teach_kb,
+                        raw=False)
         logger.error("Пользователь %s вернулся в главное меню как препод" % chat_id)
 
     elif user_type == U.ABITUR:
-        bot.send_message(chat_id= chat_id,
+        Send_message(chat_id= chat_id,
                         text= text,
-                        reply_markup=main_markup_abiturient_kb)
+                        reply_markup=main_markup_abiturient_kb,
+                        raw=False)
         logger.error("Пользователь %s вернулся в главное меню как абитуриент" % chat_id)
     
     #Меняем состояние пользователя
