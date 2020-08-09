@@ -45,13 +45,6 @@ class SQLHelper:
             self.cursor.execute(sql, [chat_id])
             self.connection.commit()
             return "Авто расписание выключено."
-
-    def CheckUserQuest(self, chat_id):
-        sql = "SELECT * FROM questions WHERE user_id=?"  # SQL запрос
-        self.cursor.execute(sql, [chat_id])  # проверям записан ли уже пользователь
-        if self.cursor.fetchone():
-            return True
-        return False
     
     def AddQuest(self, chat_id, message_id, text):
         sql = "INSERT INTO questions VALUES (?,?,?)"
@@ -59,15 +52,28 @@ class SQLHelper:
         self.connection.commit()
 
     def TakeQuest(self, chat_id):
-        sql = 'SELECT question_id, message FROM questions WHERE user_id=?'
+        sql = 'SELECT * FROM questions WHERE user_id=?'
         self.cursor.execute(sql, [chat_id])
-        self.connection.commit()
-        quest = self.cursor.fetchone()
 
-        if(quest):
-            return 'Вопрос №{}\n{}'.format(*quest)
-        else:
-            return None
+        return self.cursor.fetchone()
+    
+    def TakeQuestWithId(self, message_id):
+        sql = 'SELECT * FROM questions WHERE question_id=?'
+        self.cursor.execute(sql, [message_id])
+
+        return self.cursor.fetchone()
+
+    def TakeFirsQuest(self):
+        sql = 'SELECT question_id, message FROM questions ORDER BY ROWID ASC LIMIT 1'
+        self.cursor.execute(sql)
+
+        return self.cursor.fetchone()
+    
+    def TakeRandomQuest(self):
+        sql = 'SELECT question_id, message FROM questions ORDER BY random() LIMIT 1'
+        self.cursor.execute(sql)
+
+        return self.cursor.fetchone()
 
     def DeleteQuest(self, chat_id):
         sql = 'DELETE FROM questions WHERE user_id=?'
