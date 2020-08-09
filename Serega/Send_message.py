@@ -15,7 +15,7 @@ def Send_message(chat_id, text, raw = True, reply_to_message_id=None,
         bot.send_message(chat_id, text, reply_to_message_id = reply_to_message_id,
                         reply_markup=reply_markup, parse_mode=parse_mode)
     except ConnectionError:
-        time.sleep(SLEEPTIME)
+        #time.sleep(SLEEPTIME)
         bot.send_message(chat_id, text, reply_to_message_id = reply_to_message_id,
                         reply_markup=reply_markup, parse_mode=parse_mode)
 
