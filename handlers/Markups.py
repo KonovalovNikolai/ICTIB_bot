@@ -15,6 +15,7 @@ day_choose_kb.row(B.BACK)
 #Для студентов
 main_markup_stud_kb = types.ReplyKeyboardMarkup(resize_keyboard= True)
 main_markup_stud_kb.row(B.MAIN_MENU_TTABLE)
+main_markup_stud_kb.row(B.ANSWER)
 main_markup_stud_kb.row(B.SETTINGS)
 #Для преподов
 main_markup_teach_kb = types.ReplyKeyboardMarkup(resize_keyboard= True)
@@ -36,3 +37,8 @@ yes_no_kb.add(B.YES, B.NO)
 del_quest_kb = types.InlineKeyboardMarkup()
 del_quest = types.InlineKeyboardButton(text = 'Удалить вопрос', callback_data= 'DeleteQuestion')
 del_quest_kb.add(del_quest)
+
+answer_kb = types.InlineKeyboardMarkup()
+answer_btn = types.InlineKeyboardButton(text = 'Ответить', callback_data= 'AnswerQuestion')
+next_quest_btn = types.InlineKeyboardButton(text = '>>>', callback_data= 'NextQuestion')
+answer_kb.add(answer_btn, next_quest_btn)
