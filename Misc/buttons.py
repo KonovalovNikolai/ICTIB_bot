@@ -30,3 +30,12 @@ INFO = 'О боте'
 DELETE = 'Удалить аккаунт'
 
 BACK = '⬅️ Назад'
+
+DELETE_QUEST = 'Удалить вопрос'
+CALL_DELETE_QUEST = 'DeleteQuestion'
+
+SEND_ANSWER = 'Ответить'
+CALL_SEND_ANSWER = 'AnswerQuestion'
+
+NEXT = '>>>'
+CALL_NEXT = 'NextQuestion' 

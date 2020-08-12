@@ -9,7 +9,7 @@ def main():
 
     # Create handlers
     f_handler = logging.FileHandler(filename='Logs/botlog.log', mode='w')
-    f_handler.setLevel(logging.INFO)
+    f_handler.setLevel(logging.ERROR)
 
     # Create formatters and add it to handlers
     f_format = logging.Formatter( fmt= '%(asctime)s - %(name)s - %(funcName)s: %(message)s',

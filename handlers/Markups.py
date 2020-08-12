@@ -35,10 +35,10 @@ yes_no_kb =types.ReplyKeyboardMarkup(resize_keyboard= True)
 yes_no_kb.add(B.YES, B.NO)
 
 del_quest_kb = types.InlineKeyboardMarkup()
-del_quest = types.InlineKeyboardButton(text = 'Удалить вопрос', callback_data= 'DeleteQuestion')
+del_quest = types.InlineKeyboardButton(text = B.DELETE_QUEST, callback_data= B.CALL_DELETE_QUEST)
 del_quest_kb.add(del_quest)
 
 answer_kb = types.InlineKeyboardMarkup()
-answer_btn = types.InlineKeyboardButton(text = 'Ответить', callback_data= 'AnswerQuestion')
-next_quest_btn = types.InlineKeyboardButton(text = '>>>', callback_data= 'NextQuestion')
+answer_btn = types.InlineKeyboardButton(text = B.SEND_ANSWER, callback_data= B.CALL_SEND_ANSWER)
+next_quest_btn = types.InlineKeyboardButton(text = B.NEXT, callback_data= B.CALL_NEXT)
 answer_kb.add(answer_btn, next_quest_btn)

@@ -9,5 +9,4 @@ from config import bot
             and get_current_state(message.chat.id) >= S.NORMAL)
 def go_back(message):
     chat_id = message.chat.id
-
     BackToMain(chat_id)
