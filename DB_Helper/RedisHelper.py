@@ -16,7 +16,7 @@ def get_current_state(user_id):
         if (ret):
             return int(ret)
         else:
-            return None
+            return 0
 
 def set_state(user_id, value: int):
     '''
@@ -31,6 +31,8 @@ def delet_user(user_id):
     Удалить пользователя из бд состояний по id
     '''
     with redis.Redis() as db:
+        db.delete(user_id)
+    with redis.Redis(db = 2) as db:
         db.delete(user_id)
         
 def get_message(value: str):

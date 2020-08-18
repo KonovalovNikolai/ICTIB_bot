@@ -13,26 +13,14 @@ class SQLHelper:
         self.connection = sqlite3.connect(database = DATABASE_NAME, timeout= 5)
         self.cursor = self.connection.cursor()
 
-    def IsInBD(self, chat_id):
-        '''
-        Проверка записи пользователя в бд по id.
-        Если пользователь записан, то True,
-        Иначе False
-        '''
-        sql = "SELECT * FROM user WHERE id=?"
-        self.cursor.execute(sql, [chat_id])
-        if self.cursor.fetchone():
-            return True
-        return False
-
     def AddUser(self, user):
         '''
         Добавление пользователя в бд.
         user  - параметры пользователя.
         user = [chat_id, type, group, auto]
         '''
-        sql = "INSERT INTO user VALUES (?,?,?,?)"
-        self.cursor.execute(sql, user)  # Запись в БД
+        sql = "INSERT INTO user VALUES (?,?,?,?,?,?,?)"
+        self.cursor.execute(sql, (*user, 0,0,0,0))  # Запись в БД
         self.connection.commit()  # обновление таблицы БД
 
     def TakeInfo(self, chat_id):
@@ -62,7 +50,28 @@ class SQLHelper:
             sql = "UPDATE user SET auto = 0 WHERE id=?"
             self.cursor.execute(sql, [chat_id])
             self.connection.commit()
-            return False 
+            return False
+
+    def UpdateVK(self, chat_id, vk):
+        '''
+        
+        Возвращает True, если параметр был включён,
+        False - если выключен.
+        '''
+        sql = "SELECT vk{} FROM user WHERE id=?".format(vk)
+        self.cursor.execute(sql, [chat_id])
+        
+        if self.cursor.fetchone()[0] == 0:
+            sql = "UPDATE user SET vk{} = 1 WHERE id=?".format(vk)
+            self.cursor.execute(sql, [chat_id])
+            self.connection.commit()
+            return True
+        else:
+            sql = "UPDATE user SET vk{} = 0 WHERE id=?".format(vk)
+            self.cursor.execute(sql, [chat_id])
+            self.connection.commit()
+            return False
+
     def AddQuest(self, chat_id, message_id, text):
         '''
         Записать вопрос пользователя в бд.\n

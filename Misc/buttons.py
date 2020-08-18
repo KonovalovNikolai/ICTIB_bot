@@ -1,24 +1,28 @@
+MAIN_MENU_TTABLE = '📅 Расписание'
 DAYS_MON = 'Понедельник'
 DAYS_TUE = 'Вторник'
 DAYS_WED = 'Среда'
 DAYS_THU = 'Четверг'
 DAYS_FRI = 'Пятница'
 DAYS_SAT = 'Суббота'
-
-YES = '✅ Да'
-NO = '❌ Нет'
-
 AUTO_TABLE = '🕖 Авторасписание'
+
+YES = 'Да'
+NO = 'Нет'
 
 START_STUD = 'Я студент!'
 START_TEACH = 'Я преподаватель!'
 START_ABITUR = 'Я абитуриент!'
 
-MAIN_MENU_TTABLE = '📅 Расписание'
+BUILDINGS = '🏛️ Корпуса'
 
-ANSWER = 'Вопросы абитуриентов'
-
+ANSWER = '❗  Вопросы абитуриентов'
 QUESTION = '❓ Задать вопрос'
+
+FOLLOWS = '📰 Подписки'
+VK1 = 'ИКТИБ ЮФУ:'
+VK2 = 'ЮФУ:'
+VK3 = 'Проектный офис ИКТИБ:'
 
 SETTINGS = '⚙️ Настройки'
 TYPE = 'Тип: '
@@ -39,3 +43,22 @@ CALL_SEND_ANSWER = 'AnswerQuestion'
 
 NEXT = '>>>'
 CALL_NEXT = 'NextQuestion' 
+
+BUILD_A = 'А'
+BUILD_G = 'Г'
+BUILD_D = 'Д'
+BUILD_I = 'И'
+BUILD_E = 'Е'
+BUILD_K = 'К'
+BUILD_V = 'В'
+BUILD_B = 'Б'
+
+CALL_BUILD_A = 'infoA'
+CALL_BUILD_G = 'infoG'
+CALL_BUILD_D = 'infoD'
+CALL_BUILD_I = 'infoI'
+CALL_BUILD_E = 'infoE'
+CALL_BUILD_K = 'infoK'
+CALL_BUILD_V = 'infoV'
+CALL_BUILD_B = 'infoB'
+

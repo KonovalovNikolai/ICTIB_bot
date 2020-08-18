@@ -23,7 +23,7 @@ def command_handler(message):
     """
     chat_id = message.chat.id
 
-    if (get_current_state(chat_id)):
+    if (get_current_state(chat_id) > 2):
         start_logger.error('Пользователь %s обновил UI' % chat_id)
         BackToMain(chat_id, M.UI_RELOAD) #ответ пользователю
     else:
@@ -64,7 +64,7 @@ def user_entering_type(message):
 
     elif (text == B.START_ABITUR):
         db_worker = SQLHelper()
-        db_worker.AddUser(user = (chat_id, U.ABITUR, U.ABITUR, 0))
+        db_worker.AddUser(user = (chat_id, U.ABITUR, U.ABITUR))
         db_worker.close()
 
         BackToMain(chat_id, M.START_ABITUR)
@@ -91,7 +91,7 @@ def user_entering_stud_group(message):
         start_logger.error('Пользователь %s ввёл свою группу: %s' % (chat_id, text))
 
         db_worker = SQLHelper()
-        db_worker.AddUser(user = (chat_id, U.STUDENT, text, 0))
+        db_worker.AddUser(user = (chat_id, U.STUDENT, text))
         db_worker.close()
         
         BackToMain(chat_id, M.START_THANKS)
@@ -116,7 +116,7 @@ def user_entering_tech_name(message):
         start_logger.error('Пользователь %s ввёл инициалы: %s' % (chat_id, text))
 
         db_worker = SQLHelper()
-        db_worker.AddUser(user = (chat_id, U.TEACH, text,0))
+        db_worker.AddUser(user = (chat_id, U.TEACH, text))
         db_worker.close()
         
         BackToMain(chat_id, M.START_THANKS)
