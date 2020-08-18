@@ -23,19 +23,15 @@ def command_handler(message):
     """
     chat_id = message.chat.id
 
-    db_worker = SQLHelper()
-
-    if (db_worker.IsInBD(chat_id)):
+    if (get_current_state(chat_id) > 2):
         start_logger.error('Пользователь %s обновил UI' % chat_id)
-        BackToMain(chat_id, "Интерфейс обновлён.") #ответ пользователю
+        BackToMain(chat_id, M.UI_RELOAD) #ответ пользователю
     else:
         start_logger.error('Пользователь %s начал регистрацию' % chat_id)
         Send_message(chat_id= chat_id, 
                     text = M.START_GREETINGS,
                     reply_markup=start_markup_kb)
         set_state(chat_id, S.START)
-
-    db_worker.close()
 
 #Регистрация
 @bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.START)
@@ -68,10 +64,10 @@ def user_entering_type(message):
 
     elif (text == B.START_ABITUR):
         db_worker = SQLHelper()
-        db_worker.AddUser(user = (chat_id, U.ABITUR, U.ABITUR, 0))
+        db_worker.AddUser(user = (chat_id, U.ABITUR, U.ABITUR))
         db_worker.close()
 
-        BackToMain(chat_id, get_message(M.START_ABITUR))
+        BackToMain(chat_id, M.START_ABITUR)
 
         start_logger.error('Пользователь %s зарегистрировался как абитуриент' % chat_id)
 
@@ -95,11 +91,10 @@ def user_entering_stud_group(message):
         start_logger.error('Пользователь %s ввёл свою группу: %s' % (chat_id, text))
 
         db_worker = SQLHelper()
-        db_worker.AddUser(user = (chat_id, U.STUDENT, text, 0))
+        db_worker.AddUser(user = (chat_id, U.STUDENT, text))
         db_worker.close()
         
-        BackToMain(chat_id, get_message(M.START_THANKS))
-    
+        BackToMain(chat_id, M.START_THANKS)
     else:
         start_logger.error("Пользователь %s неправильно ввёл группу: %s" % (chat_id, text))
         
@@ -121,11 +116,10 @@ def user_entering_tech_name(message):
         start_logger.error('Пользователь %s ввёл инициалы: %s' % (chat_id, text))
 
         db_worker = SQLHelper()
-        db_worker.AddUser(user = (chat_id, U.TEACH, text,0))
+        db_worker.AddUser(user = (chat_id, U.TEACH, text))
         db_worker.close()
         
-        BackToMain(chat_id, get_message(M.START_THANKS))
-    
+        BackToMain(chat_id, M.START_THANKS)
     else:
         start_logger.error("Пользователь %s некорректно ввёл инициалы: %s" % (chat_id, text))
 

@@ -43,14 +43,13 @@ def choose_day(message):
     if (user_type != U.ABITUR):
         date = GetTodayDate(0) #Сегоднящняя дата
         Send_message(chat_id=chat_id,
-                        text= get_message(M.TIMETABLE_TODAY).format(date),
-                        reply_markup=day_choose_kb,
-                        raw=False)
-        
-        timetable_logger.error("Пользователь %s получил клавиатуру расписания" % chat_id)
-
+                    text= M.TIMETABLE_TODAY,
+                    form=[date],
+                    reply_markup=day_choose_kb)
         #Меняем тип пользователя
         set_state(chat_id, S.TIMETABLE)
+
+        timetable_logger.error("Пользователь %s получил клавиатуру расписания" % chat_id)
 
 #Обработка клавиатуры расписания
 @bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.TIMETABLE)
@@ -86,10 +85,12 @@ def send_timetable(message):
         ret = db_worker.UpdateAuto(chat_id)
         db_worker.close()
 
-        Send_message(chat_id= chat_id,
-                    text= ret,
-                    raw=False)
-        BackToMain(chat_id)
+        if ret:
+            answer = M.AUTO_ON
+        else:
+            answer = M.AUTO_OFF
+
+        BackToMain(chat_id, answer)
 
         timetable_logger.error("Пользователь %s изменил параметр авторасписания:\n\t%s" % (chat_id, ret))
 

@@ -2,19 +2,18 @@ from DB_Helper.RedisHelper import set_state, get_current_state
 from DB_Helper.SQLHelper import SQLHelper
 from handlers.Markups import main_markup_abiturient_kb, main_markup_stud_kb, main_markup_teach_kb
 from .Send_message import Send_message
-from Misc import S, U
+from Misc import S, U, M
 from config import bot
 import logging
 
 logger = logging.getLogger('Bot.ToTheMain')
 
-def BackToMain(chat_id, text = "🏠 Главное меню."):
+def BackToMain(chat_id, text = M.MAINMENU):
     """
     Функция для возврата пользователя в главное меню учитывая его тип.
-    chat_id - id пользователя
-    text - текст сообщения для отправки
-        по умолчанию выводит "\U0001f3e0 Главное меню."
-        \U0001f3e0 - юникод эмоута дома (https://unicode.org/emoji/charts/full-emoji-list.html#1f3e0)
+    chat_id - id пользователя.
+    text - текст сообщения для отправки.
+    по умолчанию выводит "🏠 Главное меню."
     """
     #Берём из бд тип пользователя
     db_worker = SQLHelper()
@@ -25,23 +24,20 @@ def BackToMain(chat_id, text = "🏠 Главное меню."):
     if user_type == U.STUDENT:
         Send_message(chat_id= chat_id,
                         text= text,
-                        reply_markup=main_markup_stud_kb,
-                        raw=False)
+                        reply_markup=main_markup_stud_kb)
 
         logger.error("Пользователь %s вернулся в главное меню как студент" % chat_id)
 
     elif user_type == U.TEACH:
         Send_message(chat_id= chat_id,
                         text= text,
-                        reply_markup=main_markup_teach_kb,
-                        raw=False)
+                        reply_markup=main_markup_teach_kb)
         logger.error("Пользователь %s вернулся в главное меню как препод" % chat_id)
 
     elif user_type == U.ABITUR:
         Send_message(chat_id= chat_id,
                         text= text,
-                        reply_markup=main_markup_abiturient_kb,
-                        raw=False)
+                        reply_markup=main_markup_abiturient_kb)
         logger.error("Пользователь %s вернулся в главное меню как абитуриент" % chat_id)
     
     #Меняем состояние пользователя

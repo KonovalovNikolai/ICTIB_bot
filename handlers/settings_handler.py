@@ -43,9 +43,8 @@ def choose_settings(message):
     kb = create_setting_kb(user_info)
 
     Send_message(chat_id= chat_id,
-                text= 'Меню настроек',
-                reply_markup= kb,
-                raw=False)
+                text= M.SETTINGS_MENU,
+                reply_markup= kb)
     set_state(chat_id, S.SETTINGS)
 
 @bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.SETTINGS)
@@ -55,12 +54,10 @@ def settings_menu(message):
 
     if (text == B.CONTACT):
         Send_message(chat_id= chat_id,
-                    text= 'Разработчик: @liz_zard',
-                    raw=False)
+                    text= M.DEV)
     elif (text == B.INFO):
         Send_message(chat_id= chat_id,
-                    text= 'БОТ',
-                    raw=False)
+                    text= M.ABOUT)
     elif (text == B.ALERTS):
         pass
     elif (text == B.DELETE):
@@ -74,9 +71,8 @@ def settings_menu(message):
         db.DeleteUser(chat_id)
         db.close()
         Send_message(chat_id= chat_id,
-                    text= 'Выберите тип пользователя.',
-                    reply_markup= start_markup_kb,
-                    raw=False)
+                    text= M.CHANGE_TYPE,
+                    reply_markup= start_markup_kb)
         set_state(chat_id, S.START)
     elif (text.startswith(B.GROUP)):
         db = SQLHelper()
@@ -84,9 +80,8 @@ def settings_menu(message):
         db.close()
 
         Send_message(chat_id= chat_id,
-                    text= 'Введите вашу группу. Например, КТбо1-6.',
-                    reply_markup= types.ReplyKeyboardRemove(),
-                    raw=False)
+                    text= M.CHANGE_GROUPE,
+                    reply_markup= types.ReplyKeyboardRemove())
         set_state(chat_id, S.START_STUD)
     elif (text.startswith(B.NAME)):
         db = SQLHelper()
@@ -94,9 +89,8 @@ def settings_menu(message):
         db.close()
 
         Send_message(chat_id= chat_id,
-                    text= 'Введите ваше ФИО. Например, Иванов И. И.',
-                    reply_markup= types.ReplyKeyboardRemove(),
-                    raw=False)
+                    text= M.CHANGE_NAME,
+                    reply_markup= types.ReplyKeyboardRemove())
         set_state(chat_id, S.START_TEACH)
     else:
         Send_message(chat_id = chat_id,

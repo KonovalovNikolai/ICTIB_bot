@@ -1,6 +1,6 @@
 STUDENT = 'stud'
 TEACH = 'teach'
-ABITUR = 'abiturient'
+ABITUR = 'abitur'
 
 RU_STUDENT = 'Студент'
 RU_TEACH = 'Преподаватель'
