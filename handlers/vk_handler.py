@@ -27,11 +27,9 @@ def send_inline_follow_menu(message):
     vk = db.TakeInfo(chat_id)[4:]
     db.close()
 
-    kb = create_kb(vk)
-
     Send_message(chat_id= chat_id,
-                text='Придумайте, что должен отвечать бот. Ну серьёзно, я в тупике.\n❌: так отмеченны неотслеживаемые группы,\n✔️: а так - отслеживаемые',
-                reply_markup=kb,
+                text='Придумайте, что должен отвечать бот. Ну серьёзно, я в тупике.\n❌: так отмеченны неотслеживаемые группы.\n✔️: а так - отслеживаемые',
+                reply_markup=create_kb(vk),
                 raw=False)
 
 @bot.callback_query_handler(func = lambda call: call.data.startswith('vk'))
@@ -49,59 +47,3 @@ def set_inline_follow(call):
     bot.edit_message_reply_markup(chat_id=chat_id,
                                 message_id=message_id,
                                 reply_markup=create_kb(vk))
-
-#Пробные версии
-def send_follow_menu(message):
-    chat_id = message.chat.id
-
-    db = SQLHelper()
-    vk = db.TakeInfo(chat_id)[4:]
-    db.close()
-
-    kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    if vk[0]:
-        kb.add(B.VK1 + ' ✔️')
-    else:
-        kb.add(B.VK1 + ' ❌')
-    if vk[1]:
-        kb.add(B.VK2 + ' ✔️')
-    else:
-        kb.add(B.VK2 + ' ❌')
-    if vk[2]:
-        kb.add(B.VK3 + ' ✔️')
-    else:
-        kb.add(B.VK3 + ' ❌')
-    kb.add(B.BACK)
-
-    Send_message(chat_id= chat_id,
-                text='Ваши отслеживаемые группы',
-                reply_markup=kb,
-                raw=False)
-    set_state(chat_id, S.FOLLOW_MENU)
-
-#@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.FOLLOW_MENU)
-def set_follow(message):
-    chat_id = message.chat.id
-    text = message.text
-
-    db = SQLHelper()
-
-    if text.startswith(B.VK1):
-        ret = db.UpdateVK(chat_id, 1)
-    elif text.startswith(B.VK2):
-        ret = db.UpdateVK(chat_id, 2)
-    elif text.startswith(B.VK3):
-        ret = db.UpdateVK(chat_id, 3)
-    else:
-        Send_message(chat_id = chat_id,
-                    text= M.ERROR_WRONG_CHOICE)
-        db.close()
-        return
-    db.close()
-
-    if ret:
-        answer = M.AUTO_ON
-    else:
-        answer = M.AUTO_OFF
-
-    BackToMain(chat_id, answer)

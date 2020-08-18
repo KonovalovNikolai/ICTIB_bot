@@ -14,12 +14,6 @@ URL_API_VK = "https://api.vk.com/method/wall.get?owner_id=-{}&count=2" \
     "&extended=true&access_token=95a418be15cb20104dc5ce66b8782ed988c1" \
     "fac44bc56bcb7fe6427a526960da3136b285d20e57be8b14f&v=5.84"
 
-VK = {
-    1 : 'ИКТИБ ЮФУ',
-    2 : 'Южный федеральный университет (ЮФУ)',
-    3 : 'Проектный офис ИКТИБ'
-}
-
 def Get(num):
     with Redis(db=3) as db:
         ret = db.get(num)
@@ -44,7 +38,6 @@ def get_data(URL):
     finally:
         timeout.cancel()
 
-
 # проверка на новый пост
 # вводим номер группы
 def check_new_posts(NUM):
@@ -55,11 +48,24 @@ def check_new_posts(NUM):
         except KeyError:
             if item['id'] > Get(NUM):
                 Set(NUM, item['id'])
+
                 db = SQLHelper()
                 users = db.Execute('SELECT id FROM user WHERE vk{} = 1'.format(NUM))
+                db.close()
+
+                text=''
+                for line in item['text'].split('\n', maxsplit = 3)[:3]:
+                    text+=line + '\n'
+                text += '...'
+                
                 for user in users:
                     bot.send_message(chat_id=user[0],
-                                    text= 'Обновление в группе "<a href="{}">{}</a>".\n{}'.format('https://vk.com/{}?w=wall-{}_{}'.format(DATA['response']['groups'][0]['screen_name'], DATA['response']['groups'][0]['id'], item['id']), VK[NUM], item['text']),
+                                    text= 'Обновление в группе "<a href="{}">{}</a>".\n{}'.format(
+                                            'https://vk.com/{}?w=wall-{}_{}'.format(DATA['response']['groups'][0]['screen_name'],
+                                                            DATA['response']['groups'][0]['id'],
+                                                            item['id']),
+                                            DATA['response']['groups'][0]['name'],
+                                            text),
                                     parse_mode='HTML')
                 return
 
