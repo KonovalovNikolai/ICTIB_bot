@@ -23,19 +23,14 @@ def ask_question(message):
         quest = db.TakeQuest(chat_id)
         if (quest):
             Send_message(chat_id= chat_id,
-                        text= 'У вас уже есть заданный вопрос:\n<i>Вопрос №{}\n{}</i>'.format(quest[1], quest[2]),
-                        reply_markup=del_quest_kb, parse_mode='HTML',
-                        raw=False)
+                        text = M.U_HAVE_QUEST,
+                        form = quest[1:],
+                        reply_markup = del_quest_kb,
+                        parse_mode = 'HTML')
         else:
             Send_message(chat_id= chat_id,
-                        text= '''
-Всё, что вы хотели знать об институте, но боялись спросить.\n
-Теперь абитуриенты могут задавать вопросы студентам, при этом сохраняя анонимность.
-Просто напишите мне ваш вопрос, а я найду студента, который ответит на ваш вопрос.
-Пожалуйста, соблюдайте правила приличия, задавая вопрос.
-Также убедитесь, что ответа на ваш вопрос нет в разделе "Частые вопросы".''',
-                        reply_markup= back_kb,
-                        raw=False)
+                        text= M.ASK_QUESTION,
+                        reply_markup= back_kb)
             set_state(chat_id, S.QUESTION)
     db.close()
 
@@ -48,36 +43,7 @@ def writing_quest(message):
     db.AddQuest(chat_id, message.message_id, text)
     db.close()
 
-    Send_message(chat_id= chat_id,
-                text= 'Я записал ваш вопрос. Скоро на него ответят.',
-                raw=False)
-    BackToMain(chat_id)
-
-@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.WRITE_ANSWER)
-def Write_answer(message):
-    chat_id = message.chat.id
-
-    quest_id = get_quest_id(chat_id)
-
-    Send_message(chat_id= chat_id,
-                text= 'Ответ отправлен.',
-                raw=False)
-    BackToMain(chat_id)
-    if(quest_id):
-        db = SQLHelper()
-        quest = db.TakeQuestWithId(quest_id)
-        db.DeleteQuest(quest[0])
-        db.close()
-
-        Send_message(chat_id= quest[0],
-                    text='На ваш вопрос ответили!\nВаш вопрос:\n<i>{}</i>'.format(quest[2]),
-                    raw=False,
-                    parse_mode='HTML')
-        Send_message(chat_id= quest[0],
-                    text='Ответ:\n<i>{}</i>'.format(message.text),
-                    raw=False,
-                    parse_mode='HTML')
-        
+    BackToMain(chat_id, M.QUEST_WRITED)
 
 @bot.message_handler(func = lambda message: message.text == B.ANSWER
                                 and get_current_state(message.chat.id) == S.NORMAL)
@@ -90,16 +56,38 @@ def show_quest_for_stud(message):
 
     if (quest):
         Send_message(chat_id= chat_id,
-                    text='Вопрос №{}\n<i>{}</i>'.format(*quest),
+                    text=M.QUEST_FOR_YOU,
+                    form = quest,
                     reply_markup=answer_kb,
-                    parse_mode='HTML',
-                    raw=False)
+                    parse_mode='HTML')
     else:
         Send_message(chat_id= chat_id,
-                    text='Вопросов пока нет.',
-                    raw=False)
+                    text=M.NO_QUESTION)
 
-@bot.callback_query_handler(func = lambda call: call.data == 'DeleteQuestion')
+@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.WRITE_ANSWER)
+def Write_answer(message):
+    chat_id = message.chat.id
+
+    quest_id = get_quest_id(chat_id)
+
+    BackToMain(chat_id, M.ANSWER_SENDED)
+    if(quest_id):
+        db = SQLHelper()
+        quest = db.TakeQuestWithId(quest_id)
+        if quest:
+            db.DeleteQuest(quest[0])
+        db.close()
+
+        if quest:
+            Send_message(chat_id= quest[0],
+                        text=M.ANSWER_FOR_YOU)
+
+            Send_message(chat_id= quest[0],
+                        text=message.text,
+                        reply_to_message_id=quest_id,
+                        raw=False)
+
+@bot.callback_query_handler(func = lambda call: call.data == B.CALL_DELETE_QUEST)
 def DeleteQuestion(call):
     chat_id = call.message.chat.id
     message_id = call.message.message_id
@@ -112,8 +100,7 @@ def DeleteQuestion(call):
                         chat_id= chat_id,
                         message_id= message_id)
 
-@bot.callback_query_handler(func = lambda call: call.data == 'AnswerQuestion'
-                                and get_current_state(call.message.chat.id) >= S.NORMAL)
+@bot.callback_query_handler(func = lambda call: call.data == B.CALL_SEND_ANSWER)
 def WriteAnswer(call):
     chat_id = call.message.chat.id
     message_id = call.message.message_id
@@ -132,13 +119,11 @@ def WriteAnswer(call):
         brige_to_quest(chat_id, quest_id)
 
         Send_message(chat_id= chat_id,
-                    text='Введите ваш ответ.',
-                    reply_markup=back_kb,
-                    raw=False)
+                    text=M.ENTER_ANSWER,
+                    reply_markup=back_kb)
         set_state(chat_id, S.WRITE_ANSWER)
 
-@bot.callback_query_handler(func = lambda call: call.data == 'NextQuestion'
-                                and get_current_state(call.message.chat.id) >= S.NORMAL)
+@bot.callback_query_handler(func = lambda call: call.data == B.CALL_NEXT)
 def NextQuest(call):
     chat_id = call.message.chat.id
     message_id = call.message.message_id

@@ -1,22 +1,42 @@
-from enum import Enum
+MAINMENU = '0'
 
-MAINMENU = '0' #ГЛАВНОЕ МЕНЮ
-
-START_GREETINGS = '1' # ПЕРЕД НАЧАЛОМ РАБОТЫ МНЕ НУЖНО УЗНАТЬ О ВАС НЕМНОГО ИНФОРМАЦИИ. ДАВАЙТЕ ОПРЕДЕЛИМ, К КАКОЙ ГРУППЕ ПОЛЬЗОВАТЕЛЕЙ ВЫ ОТНОСИТЕСЬ
-START_STUDENT = '2' #ХОРОШО! ИДЁМ ДАЛЕЕ.\NТЕПЕРЬ ВВЕДИ ШИФР СВОЕЙ ГРУППЫ. НАПРИМЕР, КТБО1-6.
-START_TEACHER = '3' #ОТЛИЧНО! ПРОДОЛЖИМ.\NТЕПЕРЬ ВВЕДИ СВОЮ ФАМИЛИЮ И ИНИЦИАЛЫ. НАПРИМЕР, ИВАНОВ И. И.\N ЭТО УПРОСТИТ ВАМ И МНЕ РАБОТУ. ЕСЛИ ВЫ НЕКОРЕКТНО ВВЕЛИ ДАННЫЕ, ТО НЕКОТОРЫЕ ФУНКЦИИ БУДУТ НЕ ДОСТУПНЫ. НО НИЧЕГО СТРАШНОГО, ВЫ СМОЖЕТЕ ИЗМЕНИТЬ ИХ В НАСТРОЙКАХ.
-START_ABITUR = '4' #ЗАПИСАЛ, ЭТОГО ДОСТАТОЧНО
-START_THANKS = '5' #СПАСИБО! <3
+START_GREETINGS = '1'
+START_STUDENT = '2'
+START_TEACHER = '3'
+START_ABITUR = '4'
+START_THANKS = '5'
     
-CLEAR_СONFIRMATION = '6' #ВЫ ДЕЙСТВИТЕЛЬНО ХОТИТЕ, ЧТО БЫ Я ЗАБЫЛ ВСЮ ИНФОРМАЦИЮ О ВАС?
-CLEAR_BYE = '7' #ДО СВИДАНИЯ! ЧТОБЫ ЗАНОВА НАЧАТЬ РАБОТУ СО МНОЙ, ВВЕДИТЕ КОМАНДУ /START
-CLEAR_CANCEL = '8' #ПРИЯТНО ЭТО СЛЫШАТЬ! :)
+CLEAR_СONFIRMATION = '6'
+CLEAR_BYE = '7'
+CLEAR_CANCEL = '8'
 
-TIMETABLE_TODAY = '9' #СЕГОДНЯ {}.\NВЫБЕРИТЕ ДЕНЬ НЕДЕЛИ.
-TIMETABLE_NOCONECTION = '10' #ПРОСТИТЕ, В ДАННЫЙ МОМЕНТ НЕЛЬЗЯ ПОЛУЧИТЬ РАСПИСАНИЕ. :(
+TIMETABLE_TODAY = '9'
+TIMETABLE_NOCONECTION = '10'
 TIMETABLE_WRONGGROUP = '11'
-TIMETABLE_NOTABLE = '12' #ЧТО-ТО ПОШЛО НЕ ТАК ИЛИ НА ЭТОТ ДЕНЬ РАСПИСАНИЯ НЕТ.
+TIMETABLE_NOTABLE = '12'
 
-ERROR_WRONG_INPUT = '13' #НЕКОРРЕКТНЫЙ ВВОД.\NПОВТОРИТЕ ПОПЫТКУ.
-ERROR_WRONG_CHOICE = '14' #ВЫБЕРИ ЧТО-ТО ИЗ ПРЕДЛОЖЕННОГО!
-ERROR_SOMTING_WRONG = '15' #ЧТО-ТО ПОШЛО НЕ ТАК
+ERROR_WRONG_INPUT = '13'
+ERROR_WRONG_CHOICE = '14'
+ERROR_SOMTING_WRONG = '15'
+
+U_HAVE_QUEST = '16'
+ASK_QUESTION = '17'
+QUEST_WRITED = '18'
+NO_QUESTION = '19'
+ANSWER_SENDED = '20'
+ANSWER_FOR_YOU = '21'
+SETTINGS_MENU = '22'
+DEV = '23'
+ABOUT = '24'
+
+CHANGE_TYPE = '25'
+CHANGE_GROUPE = '26'
+CHANGE_NAME = '27'
+
+AUTO_ON = '28'
+AUTO_OFF = '29'
+
+UI_RELOAD = '30'
+
+QUEST_FOR_YOU = '31'
+ENTER_ANSWER = '32'
