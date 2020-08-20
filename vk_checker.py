@@ -1,5 +1,5 @@
 import requests
-import time
+import datetime
 
 import eventlet
 from redis import Redis
@@ -59,7 +59,7 @@ def check_new_posts(NUM):
                 for line in item['text'].split('\n', maxsplit = 3)[:3]:
                     text+=line + '\n'
                 text += '...'
-                
+                print(users)
                 for user in users:
                     bot.send_message(chat_id=user[0],
                                     text= 'Обновление в группе "<a href="{}">{}</a>".\n{}'.format(
@@ -72,6 +72,8 @@ def check_new_posts(NUM):
                 return
 
 if __name__ == "__main__":
+    print(datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S") ,'START')
     check_new_posts(1)
     check_new_posts(2)
     check_new_posts(3)
+    print('DONE')
