@@ -58,16 +58,15 @@ def check_new_posts(NUM):
 
                 text=''
                 for line in item['text'].split('\n', maxsplit = 3)[:3]:
-                    line = re.sub(r'\[\w+', '', line)
-                    line = re.sub(r'\|', '', line)
+                    line = re.sub(r'\[\w+\|', '', line)
                     line = re.sub(r'\]', '', line)
                     
                     text+=line + '\n'
-                text += '...'
+                text += '<b>...</b>'
                 print(users)
                 for user in users:
                     bot.send_message(chat_id=user[0],
-                                    text= 'Обновление в группе "<a href="{}">{}</a>".\n{}'.format(
+                                    text= 'Обновление в группе "<a href="{}"><b>{}</b></a>".\n{}'.format(
                                             'https://vk.com/{}?w=wall-{}_{}'.format(DATA['response']['groups'][0]['screen_name'],
                                                             DATA['response']['groups'][0]['id'],
                                                             item['id']),
