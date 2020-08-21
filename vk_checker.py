@@ -58,7 +58,7 @@ def check_new_posts(NUM):
                 text=''
                 for line in item['text'].split('\n', maxsplit = 3)[:3]:
                     line = re.sub(r'\[\w+\|', '', line)
-                    line = re.sub(r'\]', '', line)
+                    line = re.sub(r'\]\s', '', line)
                     
                     text+=line + '\n'
                 text += '<b>...</b>'
