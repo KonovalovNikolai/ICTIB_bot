@@ -14,8 +14,7 @@ PASS = 'QzEcTb123789'
 ID_G = [48632629, 47535294, 177747188]
 # вариативная строка vk api
 URL_API_VK = "https://api.vk.com/method/wall.get?owner_id=-{}&count=2" \
-    "&extended=true&access_token=95a418be15cb20104dc5ce66b8782ed988c1" \
-    "fac44bc56bcb7fe6427a526960da3136b285d20e57be8b14f&v=5.84"
+    "&extended=true&access_token=73d01c447f70a7e2e8f6a6a13b0cc869fad41735408d0871f88699a47e92a7830c0d9b931e41c9ec3d47e&v=5.84"
 
 def Get(num):
     with Redis(db=3, password= PASS) as db:
