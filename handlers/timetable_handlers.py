@@ -2,13 +2,10 @@ import logging
 
 from DB_Helper.RedisHelper import set_state, get_current_state, get_message
 from DB_Helper.SQLHelper import SQLHelper
-from Serega.send_message import send_message
 from Serega.Timetable import GetTodayDate, GetTimetable
+from Serega.Send_message import Send_message
 from Serega.ToTheMain import BackToMain
-from Misc import message as M
-from Misc import buttons as B
-from Misc import states as S
-from Misc import users as U
+from Misc import *
 from .Markups import day_choose_kb
 from config import bot
 
@@ -45,14 +42,14 @@ def choose_day(message):
     #Если пользователь не абитуриент, то выводим календарь
     if (user_type != U.ABITUR):
         date = GetTodayDate(0) #Сегоднящняя дата
-        send_message(chat_id=chat_id,
-                        text= get_message(M.TIMETABLE_TODAY).format(date),
-                        reply_markup=day_choose_kb)
-        
-        timetable_logger.error("Пользователь %s получил клавиатуру расписания" % chat_id)
-
+        Send_message(chat_id=chat_id,
+                    text= M.TIMETABLE_TODAY,
+                    form=[date],
+                    reply_markup=day_choose_kb)
         #Меняем тип пользователя
         set_state(chat_id, S.TIMETABLE)
+
+        timetable_logger.error("Пользователь %s получил клавиатуру расписания" % chat_id)
 
 #Обработка клавиатуры расписания
 @bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.TIMETABLE)
@@ -74,7 +71,7 @@ def send_timetable(message):
         #Получаем расписание
         res = GetTimetable(group, day_to_number[text])
         #Вывод расписания
-        send_message(chat_id=chat_id, text= res)
+        Send_message(chat_id=chat_id, text= res, raw=False)
 
         timetable_logger.error("Пользователь %s получил расписаниеч" % chat_id)
         
@@ -88,14 +85,17 @@ def send_timetable(message):
         ret = db_worker.UpdateAuto(chat_id)
         db_worker.close()
 
-        send_message(chat_id= chat_id,
-                    text= ret)
-        BackToMain(chat_id)
+        if ret:
+            answer = M.AUTO_ON
+        else:
+            answer = M.AUTO_OFF
+
+        BackToMain(chat_id, answer)
 
         timetable_logger.error("Пользователь %s изменил параметр авторасписания:\n\t%s" % (chat_id, ret))
 
     #Ничего из предложенного
     else:
         timetable_logger.error("Пользователь %s сделал неправильный выбор: %s" % (chat_id, text))
-        send_message(chat_id = chat_id,
-                    text= get_message(M.ERROR_WRONG_CHOICE))
+        Send_message(chat_id = chat_id,
+                    text= M.ERROR_WRONG_CHOICE)

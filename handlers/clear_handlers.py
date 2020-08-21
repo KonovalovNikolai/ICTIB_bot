@@ -2,11 +2,9 @@ import logging
 
 from DB_Helper.RedisHelper import set_state, get_current_state, delet_user, get_message
 from DB_Helper.SQLHelper import SQLHelper
-from Serega.send_message import send_message
 from Serega.ToTheMain import BackToMain
-from Misc import message as M
-from Misc import buttons as B
-from Misc import states as S
+from Serega.Send_message import Send_message
+from Misc import M, B, S
 from .Markups import yes_no_kb
 from telebot import types
 from config import bot
@@ -25,8 +23,8 @@ def command_handler(message):
     chat_id = message.chat.id
 
     #Отправить клавиатуру потверждения
-    send_message(chat_id = chat_id,
-                text = get_message(M.CLEAR_СONFIRMATION),
+    Send_message(chat_id = chat_id,
+                text = M.CLEAR_СONFIRMATION,
                 reply_markup = yes_no_kb)
 
     clear_logger.error("Пользователь %s получил клавиатуру для потверждения удаления" % chat_id)
@@ -44,10 +42,6 @@ def user_entering_type(message):
     text = message.text
 
     if (text == B.YES):
-        send_message(chat_id = chat_id,
-                    text = get_message(M.CLEAR_BYE),
-                    reply_markup = types.ReplyKeyboardRemove())
-
         #Удаление пользователя из sqlite
         db_worker = SQLHelper()
         db_worker.DeleteUser(chat_id)
@@ -55,15 +49,19 @@ def user_entering_type(message):
         #Удаление пользователя из Redis
         delet_user(chat_id)
 
+        Send_message(chat_id = chat_id,
+                    text = M.CLEAR_BYE,
+                    reply_markup = types.ReplyKeyboardRemove())
+
         clear_logger.error("Пользователь %s потвердил удаление" % chat_id)
     
     elif (text == B.NO):
-        BackToMain(chat_id, get_message(M.CLEAR_CANCEL))
+        BackToMain(chat_id, M.CLEAR_CANCEL)
 
         clear_logger.error("Пользователь %s отменил удаление" % chat_id)
     
     else:
-        send_message(chat_id = chat_id,
-                    text = get_message(M.ERROR_WRONG_CHOICE))
+        Send_message(chat_id = chat_id,
+                    text = M.ERROR_WRONG_CHOICE)
 
         clear_logger.error("Пользователь %s сделал неправильный выбор: %s" % (chat_id, text))

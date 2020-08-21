@@ -4,13 +4,10 @@ from telebot import types
 
 from DB_Helper.RedisHelper import set_state, get_current_state, get_message
 from DB_Helper.SQLHelper import SQLHelper
-from Serega.send_message import send_message
+from Serega.Send_message import Send_message
 from Serega.ToTheMain import BackToMain
 from .Markups import yes_no_kb, start_markup_kb
-from Misc import message as M
-from Misc import states as S
-from Misc import buttons as B
-from Misc import users as U
+from Misc import *
 from config import bot
 
 def create_setting_kb(user_info = []):
@@ -45,8 +42,8 @@ def choose_settings(message):
 
     kb = create_setting_kb(user_info)
 
-    send_message(chat_id= chat_id,
-                text= 'Меню настроек',
+    Send_message(chat_id= chat_id,
+                text= M.SETTINGS_MENU,
                 reply_markup= kb)
     set_state(chat_id, S.SETTINGS)
 
@@ -56,16 +53,16 @@ def settings_menu(message):
     text = message.text
 
     if (text == B.CONTACT):
-        send_message(chat_id= chat_id,
-                    text= 'Разработчик: @liz_zard')
+        Send_message(chat_id= chat_id,
+                    text= M.DEV)
     elif (text == B.INFO):
-        send_message(chat_id= chat_id,
-                    text= 'БОТ')
+        Send_message(chat_id= chat_id,
+                    text= M.ABOUT)
     elif (text == B.ALERTS):
         pass
     elif (text == B.DELETE):
-        send_message(chat_id = chat_id,
-                    text = get_message(M.CLEAR_СONFIRMATION),
+        Send_message(chat_id = chat_id,
+                    text = M.CLEAR_СONFIRMATION,
                     reply_markup = yes_no_kb)
 
         set_state(chat_id, S.CLEAR)
@@ -73,8 +70,8 @@ def settings_menu(message):
         db = SQLHelper()
         db.DeleteUser(chat_id)
         db.close()
-        send_message(chat_id= chat_id,
-                    text= 'Выберите тип пользователя.',
+        Send_message(chat_id= chat_id,
+                    text= M.CHANGE_TYPE,
                     reply_markup= start_markup_kb)
         set_state(chat_id, S.START)
     elif (text.startswith(B.GROUP)):
@@ -82,8 +79,8 @@ def settings_menu(message):
         db.DeleteUser(chat_id)
         db.close()
 
-        send_message(chat_id= chat_id,
-                    text= 'Введите вашу группу. Например, КТбо1-6.',
+        Send_message(chat_id= chat_id,
+                    text= M.CHANGE_GROUPE,
                     reply_markup= types.ReplyKeyboardRemove())
         set_state(chat_id, S.START_STUD)
     elif (text.startswith(B.NAME)):
@@ -91,10 +88,10 @@ def settings_menu(message):
         db.DeleteUser(chat_id)
         db.close()
 
-        send_message(chat_id= chat_id,
-                    text= 'Введите ваше ФИО. Например, Иванов И. И.',
+        Send_message(chat_id= chat_id,
+                    text= M.CHANGE_NAME,
                     reply_markup= types.ReplyKeyboardRemove())
         set_state(chat_id, S.START_TEACH)
     else:
-        send_message(chat_id = chat_id,
-                    text = get_message(M.ERROR_WRONG_CHOICE))
+        Send_message(chat_id = chat_id,
+                    text = M.ERROR_WRONG_CHOICE)

@@ -18,7 +18,6 @@ for i in group_type1:
                     res = GetTimetable(group, True)
                     if res:
                         for user in users:
-                            print(user, users)
                             bot.send_message(chat_id = user[0],
                                             text = res)
 
