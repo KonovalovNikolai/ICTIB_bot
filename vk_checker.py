@@ -8,7 +8,6 @@ from redis import Redis
 from config import bot
 from DB_Helper.SQLHelper import SQLHelper
 
-PASS = 'QzEcTb123789'
 
 # id групп
 ID_G = [48632629, 47535294, 177747188]
@@ -17,7 +16,7 @@ URL_API_VK = "https://api.vk.com/method/wall.get?owner_id=-{}&count=2" \
     "&extended=true&access_token=73d01c447f70a7e2e8f6a6a13b0cc869fad41735408d0871f88699a47e92a7830c0d9b931e41c9ec3d47e&v=5.84"
 
 def Get(num):
-    with Redis(db=3, password= PASS) as db:
+    with Redis(db=3) as db:
         ret = db.get(num)
         if (ret):
             return int(ret)
@@ -26,7 +25,7 @@ def Get(num):
             return 0
 
 def Set(num, value):
-    with Redis(db=3, password= PASS) as db:
+    with Redis(db=3) as db:
         db.set(num, value)
 
 # получение данных
@@ -57,13 +56,13 @@ def check_new_posts(NUM):
                 print(users)
                 
                 text=''
-                for line in item['text'].split('\n', maxsplit = 3)[:3]:
+                for line in item['text'].split('\n', maxsplit = 4)[:4]:
                     line = re.sub(r'\[\w+\|', '', line)
                     line = re.sub(r'\]\s', '', line)
                     
                     text+=line + '\n'
                 text += '<b>...</b>'
-                print(users)
+
                 for user in users:
                     bot.send_message(chat_id=user[0],
                                     text= 'Обновление в группе "<a href="{}"><b>{}</b></a>".\n{}'.format(

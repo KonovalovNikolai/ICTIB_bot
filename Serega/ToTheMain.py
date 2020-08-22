@@ -1,6 +1,6 @@
 from DB_Helper.RedisHelper import set_state, get_current_state
 from DB_Helper.SQLHelper import SQLHelper
-from handlers.Markups import main_markup_abiturient_kb, main_markup_stud_kb, main_markup_teach_kb
+from Handlers.Markups import main_markup_abiturient_kb, main_markup_stud_kb, main_markup_teach_kb
 from .Send_message import Send_message
 from Misc import S, U, M
 from config import bot
