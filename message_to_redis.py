@@ -1,6 +1,6 @@
 import redis
 
-r = redis.Redis(db=1)
+PASS = 'QzEcTb123789'
 
 A = {
         '0' : '🏠 Главное меню.',
@@ -38,5 +38,6 @@ A = {
         '32' : 'Введите ваш ответ.'
     }
 
-for i in A.keys():
-    r.set(i, A[i])
+with redis.Redis(db=1, password= PASS) as r:
+        for i in A.keys():
+            r.set(i, A[i])
