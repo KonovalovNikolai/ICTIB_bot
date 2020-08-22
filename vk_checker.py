@@ -52,7 +52,8 @@ def check_new_posts(NUM):
                 db = SQLHelper()
                 users = db.Execute('SELECT id FROM user WHERE vk{} = 1'.format(NUM))
                 db.close()
-
+                print(users)
+                
                 text=''
                 for line in item['text'].split('\n', maxsplit = 3)[:3]:
                     text+=line + '\n'
