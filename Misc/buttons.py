@@ -1,11 +1,19 @@
 MAIN_MENU_TTABLE = '📅 Расписание'
+TODAY = 'Сегодня'
+TOMORROW = 'Завтра'
 DAYS_MON = 'Понедельник'
 DAYS_TUE = 'Вторник'
 DAYS_WED = 'Среда'
 DAYS_THU = 'Четверг'
 DAYS_FRI = 'Пятница'
 DAYS_SAT = 'Суббота'
+EXTENDED_T = 'Расширенный поиск'
 AUTO_TABLE = '🕖 Авторасписание'
+
+SEARCH_T = 'Найти'
+CALL_SEARCH_GP = 'srch_g'
+CALL_SEARCH_DAY = 'srch_d'
+CALL_SEARCH_T = 'srch_t'
 
 YES = 'Да'
 NO = 'Нет'
@@ -42,7 +50,7 @@ SEND_ANSWER = 'Ответить'
 CALL_SEND_ANSWER = 'AnswerQuestion'
 
 NEXT = '>>>'
-CALL_NEXT = 'NextQuestion' 
+CALL_NEXT = 'NextQuestion'
 
 BUILD_A = 'А'
 BUILD_G = 'Г'
@@ -61,4 +69,6 @@ CALL_BUILD_E = 'infoE'
 CALL_BUILD_K = 'infoK'
 CALL_BUILD_V = 'infoV'
 CALL_BUILD_B = 'infoB'
+
+BUILD_INFO = 'Доп. информация'
 

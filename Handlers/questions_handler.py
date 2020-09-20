@@ -1,141 +1,105 @@
 import logging
 import re
 
+from Serega.User_Class import User
 from Misc import *
-from DB_Helper.RedisHelper import set_state, get_current_state, get_message, brige_to_quest, get_quest_id
-from DB_Helper.SQLHelper import SQLHelper
-from Serega.ToTheMain import BackToMain
-from Serega.Send_message import Send_message
 from .Markups import back_kb, del_quest_kb, answer_kb
 from config import bot
 
 quest_logger = logging.getLogger('Bot.question_handler')
 
 @bot.message_handler(func = lambda message: message.text == B.QUESTION
-                        and get_current_state(message.chat.id) == S.NORMAL)
+                        and User(message).GetUserState() == S.NORMAL)
 def ask_question(message):
-    chat_id = message.chat.id
-
-    db = SQLHelper()
-    user_type = db.TakeInfo(chat_id)[1]
-
-    if (user_type == U.ABITUR):
-        quest = db.TakeQuest(chat_id)
+    user = User(message, bot)
+    user.GetUserInfo()
+    if (user.type == U.ABITUR):
+        quest = user.GetUserQuest()
         if (quest):
-            Send_message(chat_id= chat_id,
-                        text = M.U_HAVE_QUEST,
-                        form = quest[1:],
-                        reply_markup = del_quest_kb,
-                        parse_mode = 'HTML')
+            user.SendMessage(text = M.U_HAVE_QUEST,
+                            form = quest[1:],
+                            reply_markup = del_quest_kb,
+                            parse_mode = 'HTML')
         else:
-            Send_message(chat_id= chat_id,
-                        text= M.ASK_QUESTION,
-                        reply_markup= back_kb)
-            set_state(chat_id, S.QUESTION)
-    db.close()
+            user.SendMessage(text= M.ASK_QUESTION,
+                            reply_markup= back_kb,
+                            state=S.QUESTION)
 
-@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.QUESTION)
+@bot.message_handler(func = lambda message: User(message).GetUserState() == S.QUESTION)
 def writing_quest(message):
-    chat_id = message.chat.id
-    text = message.text
-
-    db = SQLHelper()
-    db.AddQuest(chat_id, message.message_id, text)
-    db.close()
-
-    BackToMain(chat_id, M.QUEST_WRITED)
+    user = User(message, bot)
+    user.AddQuest(message.message_id, message.text)
+    user.BackToMain(M.QUEST_WRITED)
 
 @bot.message_handler(func = lambda message: message.text == B.ANSWER
-                                and get_current_state(message.chat.id) == S.NORMAL)
+                                and User(message).GetUserState() == S.NORMAL)
 def show_quest_for_stud(message):
-    chat_id = message.chat.id
+    user = User(message, bot)
+    user.GetUserInfo()
 
-    db = SQLHelper()
-    quest = db.TakeFirsQuest()
-    db.close()
+    if(user.type == U.STUDENT):
+        quest = user.GetFirstQuest()
+        if (quest):
+            user.SendMessage(text=M.QUEST_FOR_YOU,
+                            form = quest,
+                            reply_markup=answer_kb,
+                            parse_mode='HTML')
+        else:
+            user.SendMessage(text=M.NO_QUESTION)
 
-    if (quest):
-        Send_message(chat_id= chat_id,
-                    text=M.QUEST_FOR_YOU,
-                    form = quest,
-                    reply_markup=answer_kb,
-                    parse_mode='HTML')
-    else:
-        Send_message(chat_id= chat_id,
-                    text=M.NO_QUESTION)
-
-@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.WRITE_ANSWER)
+@bot.message_handler(func = lambda message: User(message).GetUserState() == S.WRITE_ANSWER)
 def Write_answer(message):
-    chat_id = message.chat.id
+    user = User(message, bot)
 
-    quest_id = get_quest_id(chat_id)
+    quest_id = user.GetQuestBrige()
 
-    BackToMain(chat_id, M.ANSWER_SENDED)
+    user.BackToMain(M.ANSWER_SENDED)
+
     if(quest_id):
-        db = SQLHelper()
-        quest = db.TakeQuestWithId(quest_id)
-        if quest:
-            db.DeleteQuest(quest[0])
-        db.close()
+        quest = user.GetQuestById(message.id)
 
         if quest:
-            Send_message(chat_id= quest[0],
-                        text=M.ANSWER_FOR_YOU)
-
-            Send_message(chat_id= quest[0],
-                        text=message.text,
-                        reply_to_message_id=quest_id,
-                        raw=False)
+            user.SendMessageToAnotherUser(chat_id= quest[0],
+                                        text=M.ANSWER_FOR_YOU)
+            try:
+                user.SendMessageToAnotherUser(chat_id= quest[0],
+                                            text=message.text,
+                                            reply_to_message_id=quest_id,
+                                            raw=False)
+            except:
+                user.SendMessageToAnotherUser(chat_id= quest[0],
+                                            text='<i>{}</i>\n{}'.format(quest[2], message.text),
+                                            parse_mode='HTML',
+                                            raw=False)
 
 @bot.callback_query_handler(func = lambda call: call.data == B.CALL_DELETE_QUEST)
 def DeleteQuestion(call):
-    chat_id = call.message.chat.id
-    message_id = call.message.message_id
-
-    db = SQLHelper()
-    db.DeleteQuest(chat_id)
-    db.close()
-
-    bot.edit_message_text(text= 'Вопрос удалён.',
-                        chat_id= chat_id,
-                        message_id= message_id)
+    user = User(call.message, bot)
+    user.DeleteQuest()
+    user.EditMessageText(text=M.QUEST_DELETED)
 
 @bot.callback_query_handler(func = lambda call: call.data == B.CALL_SEND_ANSWER)
 def WriteAnswer(call):
-    chat_id = call.message.chat.id
-    message_id = call.message.message_id
+    user = User(call.message, bot)
+    user.EditMessageReplyMarkup()
+    user.GetUserInfo()
 
-    bot.edit_message_reply_markup(chat_id=chat_id,
-                                message_id= message_id)
-    
-    db = SQLHelper()
-    user_type = db.TakeInfo(chat_id)[1]
-    db.close()
-
-    if(user_type == U.STUDENT):
+    if(user.type == U.STUDENT):
         quest_id = call.message.text.split('\n')[0]
         quest_id = re.search(r'\d+', quest_id).group(0)
         
-        brige_to_quest(chat_id, quest_id)
-
-        Send_message(chat_id= chat_id,
-                    text=M.ENTER_ANSWER,
-                    reply_markup=back_kb)
-        set_state(chat_id, S.WRITE_ANSWER)
+        user.SetQuestBrige(quest_id)
+        user.SendMessage(text=M.ENTER_ANSWER,
+                        reply_markup=back_kb,
+                        state=S.WRITE_ANSWER)
 
 @bot.callback_query_handler(func = lambda call: call.data == B.CALL_NEXT)
 def NextQuest(call):
-    chat_id = call.message.chat.id
-    message_id = call.message.message_id
+    user = User(call.message, bot)
 
-    db = SQLHelper()
-    quest = db.TakeRandomQuest()
-    db.close()
+    quest = user.GetRandomQuest()
 
-    bot.edit_message_text(chat_id= chat_id,
-                        message_id= message_id,
-                        text='Вопрос №{}\n<i>{}</i>'.format(*quest),
+    user.EditMessageText(text =M.QUEST_NUMBER,
+                        form = quest,
                         parse_mode='HTML')
-    bot.edit_message_reply_markup(chat_id=chat_id,
-                                message_id= message_id,
-                                reply_markup=answer_kb)
+    user.EditMessageReplyMarkup(reply_markup=answer_kb)

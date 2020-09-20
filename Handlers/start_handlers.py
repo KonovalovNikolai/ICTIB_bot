@@ -3,10 +3,7 @@ import re
 
 from telebot import types
 
-from DB_Helper.RedisHelper import set_state, get_current_state, get_message
-from DB_Helper.SQLHelper import SQLHelper
-from Serega.ToTheMain import BackToMain
-from Serega.Send_message import Send_message
+from Serega.User_Class import User
 from Misc import *
 from .Markups import start_markup_kb
 from config import bot
@@ -21,107 +18,84 @@ def command_handler(message):
     Если пользователя нет в бд, то начинаем регистрацию
     Если есть, то обновляем итерфейс и состояние
     """
-    chat_id = message.chat.id
+    user = User(message, bot)
+    user.GetUserInfo()
 
-    if (get_current_state(chat_id) > 2):
-        start_logger.error('Пользователь %s обновил UI' % chat_id)
-        BackToMain(chat_id, M.UI_RELOAD) #ответ пользователю
+    if (user.type != None):
+        start_logger.error('Пользователь %s обновил UI' % message.chat.id)
+        user.BackToMain(M.UI_RELOAD) #ответ пользователю
     else:
-        start_logger.error('Пользователь %s начал регистрацию' % chat_id)
-        Send_message(chat_id= chat_id, 
-                    text = M.START_GREETINGS,
-                    reply_markup=start_markup_kb)
-        set_state(chat_id, S.START)
+        start_logger.error('Пользователь %s начал регистрацию' % message.chat.id)
+        user.SendMessage(text = M.START_GREETINGS,
+                        reply_markup = start_markup_kb,
+                        state = S.START)
 
 #Регистрация
-@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.START)
+@bot.message_handler(func = lambda message: User(message).GetUserState() == S.START)
 def user_entering_type(message):
     """
     Начало регистрации пользователя.
     Узнаём к каому типу относится пользователь.
     Если он абитуриент, то регистрация заганчивается.
     """
-    chat_id = message.chat.id
+    user = User(message, bot)
     text = message.text
     
     if (text == B.START_STUD):
-        Send_message(chat_id= chat_id, 
-                    text= M.START_STUDENT, 
-                    reply_markup = types.ReplyKeyboardRemove())
-
-        start_logger.error('Пользователь %s продолжил регистрацию как студент' % chat_id)
-        
-        set_state(chat_id, S.START_STUD)
+        user.SendMessage(text= M.START_STUDENT, 
+                        reply_markup = types.ReplyKeyboardRemove(),
+                        state=S.START_STUD)
+        start_logger.error('Пользователь %s продолжил регистрацию как студент' % message.chat.id)
 
     elif (text == B.START_TEACH):
-        Send_message(chat_id= chat_id,
-                        text= M.START_TEACHER,
-                        reply_markup = types.ReplyKeyboardRemove())
-
-        start_logger.error('Пользователь %s продолжил регистрацию как препод' % chat_id)
-        
-        set_state(chat_id, S.START_TEACH)
+        user.SendMessage(text= M.START_TEACHER,
+                        reply_markup = types.ReplyKeyboardRemove(),
+                        state=S.START_TEACH)
+        start_logger.error('Пользователь %s продолжил регистрацию как препод' % message.chat.id)
 
     elif (text == B.START_ABITUR):
-        db_worker = SQLHelper()
-        db_worker.AddUser(user = (chat_id, U.ABITUR, U.ABITUR))
-        db_worker.close()
-
-        BackToMain(chat_id, M.START_ABITUR)
-
-        start_logger.error('Пользователь %s зарегистрировался как абитуриент' % chat_id)
+        user.AddUser(U.ABITUR, U.ABITUR)
+        user.BackToMain(M.START_ABITUR)
+        start_logger.error('Пользователь %s зарегистрировался как абитуриент' % message.chat.id)
 
     else:
-        Send_message(chat_id, M.ERROR_WRONG_CHOICE)
-
-        start_logger.error("Пользователь %s сделал неправильный выбор: %s" % (chat_id, text))
+        user.SendMessage(text = M.ERROR_WRONG_CHOICE)
+        start_logger.error("Пользователь %s сделал неправильный выбор: %s" % (message.chat.id, text))
 
 #Запись группы студента
-@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.START_STUD)
+@bot.message_handler(func = lambda message: User(message).GetUserState() == S.START_STUD)
 def user_entering_stud_group(message):
     """
     Спрашиваем студента о его группе
     """
-    chat_id = message.chat.id
+    user = User(message, bot)
     text = message.text.lower()
     
     if (7 <= len(text) <= 8 and re.fullmatch(r'кт[абсм][зо][1-5]-[0-9]+', text)):
         text = text[0:2].upper() + text[2:4].lower() + text[4:] #Приводим группу к нужному формату
-        
-        start_logger.error('Пользователь %s ввёл свою группу: %s' % (chat_id, text))
 
-        db_worker = SQLHelper()
-        db_worker.AddUser(user = (chat_id, U.STUDENT, text))
-        db_worker.close()
-        
-        BackToMain(chat_id, M.START_THANKS)
+        user.AddUser(U.STUDENT, text)
+        user.BackToMain(M.START_THANKS)
+        start_logger.error('Пользователь %s ввёл свою группу: %s' % (message.chat.id, text))
     else:
-        start_logger.error("Пользователь %s неправильно ввёл группу: %s" % (chat_id, text))
-        
-        Send_message(chat_id = chat_id,
-                        text= M.ERROR_WRONG_INPUT)
+        user.SendMessage(text= M.ERROR_WRONG_INPUT)
+        start_logger.error("Пользователь %s неправильно ввёл группу: %s" % (message.chat.id, text))
 
 #Запись имени препада
-@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.START_TEACH)
+@bot.message_handler(func = lambda message: User(message).GetUserState() == S.START_TEACH)
 def user_entering_tech_name(message):
-    chat_id = message.chat.id #id чата
+    user = User(message, bot)
     text = message.text.lower() #введённое ФИО
     
-    if (re.fullmatch(r'\w+ \w[.] \w[.]', text)):
+    if (re.fullmatch(r'\w+', text) or re.fullmatch(r'\w+ \w[.] \w[.]', text)):
         text = text[0].upper() + text[1:]#Приводим текст к нужному формату
-        
         for i in re.finditer(r'\w[.]', text):
             text = text[:i.start()] + text[i.start()].upper() + text[i.start()+1:]
 
-        start_logger.error('Пользователь %s ввёл инициалы: %s' % (chat_id, text))
+        user.AddUser(U.TEACH, text)
+        user.BackToMain(M.START_THANKS)
 
-        db_worker = SQLHelper()
-        db_worker.AddUser(user = (chat_id, U.TEACH, text))
-        db_worker.close()
-        
-        BackToMain(chat_id, M.START_THANKS)
+        start_logger.error('Пользователь %s ввёл инициалы: %s' % (message.chat.id, text))
     else:
-        start_logger.error("Пользователь %s некорректно ввёл инициалы: %s" % (chat_id, text))
-
-        Send_message(chat_id = chat_id,
-                        text= M.ERROR_WRONG_INPUT)
+        start_logger.error("Пользователь %s некорректно ввёл инициалы: %s" % (message.chat.id, text))
+        user.SendMessage(text = M.ERROR_WRONG_CHOICE)

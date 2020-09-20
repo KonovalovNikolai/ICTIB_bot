@@ -2,7 +2,7 @@ import sqlite3
 
 #Модуль для работы с SQLite
 
-DATABASE_NAME = "database.db"
+DATABASE_NAME = "Database.db"
 
 class SQLHelper:
     def __init__(self):
@@ -17,10 +17,10 @@ class SQLHelper:
         '''
         Добавление пользователя в бд.
         user  - параметры пользователя.
-        user = [chat_id, type, group, auto]
+        user = [chat_id, type, group]
         '''
-        sql = "INSERT INTO user VALUES (?,?,?,?,?,?,?)"
-        self.cursor.execute(sql, (*user, 0,0,0,0))  # Запись в БД
+        sql = "INSERT INTO user VALUES (?,?,?,?)"
+        self.cursor.execute(sql, (*user, 0))  # Запись в БД
         self.connection.commit()  # обновление таблицы БД
 
     def TakeInfo(self, chat_id):
@@ -40,7 +40,7 @@ class SQLHelper:
         '''
         sql = "SELECT auto FROM user WHERE id=?"
         self.cursor.execute(sql, [chat_id])
-        
+
         if self.cursor.fetchone()[0] == 0:
             sql = "UPDATE user SET auto = 1 WHERE id=?"
             self.cursor.execute(sql, [chat_id])
@@ -48,26 +48,6 @@ class SQLHelper:
             return True
         else:
             sql = "UPDATE user SET auto = 0 WHERE id=?"
-            self.cursor.execute(sql, [chat_id])
-            self.connection.commit()
-            return False
-
-    def UpdateVK(self, chat_id, vk):
-        '''
-        
-        Возвращает True, если параметр был включён,
-        False - если выключен.
-        '''
-        sql = "SELECT vk{} FROM user WHERE id=?".format(vk)
-        self.cursor.execute(sql, [chat_id])
-        
-        if self.cursor.fetchone()[0] == 0:
-            sql = "UPDATE user SET vk{} = 1 WHERE id=?".format(vk)
-            self.cursor.execute(sql, [chat_id])
-            self.connection.commit()
-            return True
-        else:
-            sql = "UPDATE user SET vk{} = 0 WHERE id=?".format(vk)
             self.cursor.execute(sql, [chat_id])
             self.connection.commit()
             return False
@@ -92,8 +72,8 @@ class SQLHelper:
         self.cursor.execute(sql, [chat_id])
 
         return self.cursor.fetchone()
-    
-    def TakeQuestWithId(self, message_id):
+
+    def TakeQuestById(self, message_id):
         '''
         Взять вопрос по id сообщения.
         Возвращает все поля записи.
@@ -112,7 +92,7 @@ class SQLHelper:
         self.cursor.execute(sql)
 
         return self.cursor.fetchone()
-    
+
     def TakeRandomQuest(self):
         '''
         Взять случайный вопрос.
@@ -130,7 +110,6 @@ class SQLHelper:
         sql = 'DELETE FROM questions WHERE user_id=?'
         self.cursor.execute(sql, [chat_id])
         self.connection.commit()
-
 
     #выполнить sql запрос
     def Execute(self, sql):
@@ -155,6 +134,13 @@ class SQLHelper:
 
     # Не забудь закрыть БД!
     def close(self):
+        '''
+        Закрыть курсор и соединение с бд.
+        '''
+        self.cursor.close()
+        self.connection.close()
+
+    def __del__(self):
         '''
         Закрыть курсор и соединение с бд.
         '''

@@ -5,11 +5,19 @@ from Misc import B
 back_kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 back_kb.add(B.BACK)
 
-day_choose_kb = types.ReplyKeyboardMarkup(row_width=3)
+day_choose_kb = types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
+day_choose_kb.add(B.TODAY, B.TOMORROW)
 day_choose_kb.add(B.DAYS_MON, B.DAYS_TUE, B.DAYS_WED)
 day_choose_kb.add(B.DAYS_THU, B.DAYS_FRI, B.DAYS_SAT)
+day_choose_kb.add(B.EXTENDED_T)
 day_choose_kb.row(B.AUTO_TABLE)
 day_choose_kb.row(B.BACK)
+
+day_choose_search_kb = types.ReplyKeyboardMarkup(row_width=3)
+day_choose_search_kb.add(B.TODAY, B.TOMORROW)
+day_choose_search_kb.add(B.DAYS_MON, B.DAYS_TUE, B.DAYS_WED)
+day_choose_search_kb.add(B.DAYS_THU, B.DAYS_FRI, B.DAYS_SAT)
+day_choose_search_kb.row(B.BACK)
 
 #Основная клавиатура
 #Для студентов

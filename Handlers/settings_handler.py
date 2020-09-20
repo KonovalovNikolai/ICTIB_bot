@@ -2,26 +2,23 @@ import logging
 
 from telebot import types
 
-from DB_Helper.RedisHelper import set_state, get_current_state, get_message
-from DB_Helper.SQLHelper import SQLHelper
-from Serega.Send_message import Send_message
-from Serega.ToTheMain import BackToMain
+from Serega.User_Class import User
 from .Markups import yes_no_kb, start_markup_kb
 from Misc import *
 from config import bot
 
-def create_setting_kb(user_info = []):
+def CreateSettingKb(user_type, user_group):
     kb = types.ReplyKeyboardMarkup()
 
-    if (user_info[1] == U.ABITUR):
+    if (user_type == U.ABITUR):
         kb.add(B.TYPE + U.RU_ABITUR)
     else:
-        if (user_info[1] == U.STUDENT):
+        if (user_type == U.STUDENT):
             kb.add(B.TYPE + U.RU_STUDENT)
-            kb.add(B.GROUP + user_info[2])
+            kb.add(B.GROUP + user_group)
         else:
             kb.add(B.TYPE + U.RU_TEACH)
-            kb.add(B.NAME + user_info[2])
+            kb.add(B.NAME + user_group)
         
         kb.add(B.ALERTS)
     
@@ -31,67 +28,46 @@ def create_setting_kb(user_info = []):
 
     return kb
 
-@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.NORMAL
-                        and message.text == B.SETTINGS)
+@bot.message_handler(func = lambda message: message.text == B.SETTINGS
+                        and User(message).GetUserState() == S.NORMAL)
 def choose_settings(message):
-    chat_id = message.chat.id
+    user = User(message, bot)
+    user.GetUserInfo()
 
-    db = SQLHelper()
-    user_info = db.TakeInfo(chat_id)
-    db.close()
+    user.SendMessage(text= M.SETTINGS_MENU,
+                    reply_markup= CreateSettingKb(user.type, user.group),
+                    state=S.SETTINGS)
 
-    kb = create_setting_kb(user_info)
-
-    Send_message(chat_id= chat_id,
-                text= M.SETTINGS_MENU,
-                reply_markup= kb)
-    set_state(chat_id, S.SETTINGS)
-
-@bot.message_handler(func = lambda message: get_current_state(message.chat.id) == S.SETTINGS)
+@bot.message_handler(func = lambda message: User(message).GetUserState() == S.SETTINGS)
 def settings_menu(message):
-    chat_id = message.chat.id
+    user = User(message, bot)
+
     text = message.text
 
-    if (text == B.CONTACT):
-        Send_message(chat_id= chat_id,
-                    text= M.DEV)
+    if (text == B.CONTACT): 
+        user.SendMessage(text= M.DEV)
     elif (text == B.INFO):
-        Send_message(chat_id= chat_id,
-                    text= M.ABOUT)
+        user.SendMessage(text= M.ABOUT)
     elif (text == B.ALERTS):
         pass
     elif (text == B.DELETE):
-        Send_message(chat_id = chat_id,
-                    text = M.CLEAR_СONFIRMATION,
-                    reply_markup = yes_no_kb)
-
-        set_state(chat_id, S.CLEAR)
+        user.SendMessage(text = M.CLEAR_СONFIRMATION,
+                        reply_markup = yes_no_kb,
+                        state=S.CLEAR)
     elif (text.startswith(B.TYPE)):
-        db = SQLHelper()
-        db.DeleteUser(chat_id)
-        db.close()
-        Send_message(chat_id= chat_id,
-                    text= M.CHANGE_TYPE,
-                    reply_markup= start_markup_kb)
-        set_state(chat_id, S.START)
+        user.DeleteUserSQL()
+        user.SendMessage(text= M.CHANGE_TYPE,
+                        reply_markup= start_markup_kb,
+                        state=S.START)
     elif (text.startswith(B.GROUP)):
-        db = SQLHelper()
-        db.DeleteUser(chat_id)
-        db.close()
-
-        Send_message(chat_id= chat_id,
-                    text= M.CHANGE_GROUPE,
-                    reply_markup= types.ReplyKeyboardRemove())
-        set_state(chat_id, S.START_STUD)
+        user.DeleteUserSQL()
+        user.SendMessage(text= M.CHANGE_GROUPE,
+                    reply_markup= types.ReplyKeyboardRemove(),
+                    state=S.START_STUD)
     elif (text.startswith(B.NAME)):
-        db = SQLHelper()
-        db.DeleteUser(chat_id)
-        db.close()
-
-        Send_message(chat_id= chat_id,
-                    text= M.CHANGE_NAME,
-                    reply_markup= types.ReplyKeyboardRemove())
-        set_state(chat_id, S.START_TEACH)
+        user.DeleteUserSQL()
+        user.SendMessage(text= M.CHANGE_NAME,
+                        reply_markup= types.ReplyKeyboardRemove(),
+                        state=S.START_TEACH)
     else:
-        Send_message(chat_id = chat_id,
-                    text = M.ERROR_WRONG_CHOICE)
+        user.SendMessage(text = M.ERROR_WRONG_CHOICE)
