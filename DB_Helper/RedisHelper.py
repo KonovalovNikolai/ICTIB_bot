@@ -7,6 +7,27 @@ class RedisHelper:
         self.db_vk = 3
         self.password = None
 
+    def SetVKPost(self, vk, post):
+        with redis.Redis(db=self.db_vk) as db:
+            db.hset(vk, 'Post', post)
+
+    def GetVKPost(self, vk):
+        with redis.Redis(db =self.db_vk) as db:
+            ret = db.hget(vk, 'Post')
+            if (ret):
+                return int(ret)
+            else:
+                self.SetVKPost(vk, 0)
+                return 0
+
+    def GetVKID(self, vk):
+        with redis.Redis(db=self.db_vk) as db:
+            return int(db.hget(vk, 'ID'))
+
+    def GetVKUsers(self, vk):
+        with redis.Redis(db=self.db_vk) as db:
+            return db.hkeys(vk)
+
     def SetState(self, user_id, value: int):
         """
         Установить состояние value пользователю по id

@@ -35,7 +35,7 @@ class User:
             self.db = SQLHelper()
 
     def SetQuestBrige(self, quest_id):
-        SQLHelper().SetQuestBrige(self.id, quest_id)
+        RedisHelper().SetQuestBrige(self.id, quest_id)
 
     def SetState(self, state: int):
         RedisHelper().SetState(self.id, state)
@@ -58,7 +58,7 @@ class User:
 
     def GetQuestById(self, message_id):
         self.SetDB()
-        return self.db.GetQuestById(message_id)
+        return self.db.TakeQuestById(message_id)
 
     def GetUserState(self):
         return RedisHelper().GetState(self.id)

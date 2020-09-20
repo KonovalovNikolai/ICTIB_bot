@@ -52,7 +52,7 @@ CALL_SEND_ANSWER = 'AnswerQuestion'
 NEXT = '>>>'
 CALL_NEXT = 'NextQuestion'
 
-RETAKE = 'Пересдачи'
+RETAKE = '📝 Пересдачи'
 
 BUILD_A = 'А'
 BUILD_G = 'Г'
@@ -73,4 +73,10 @@ CALL_BUILD_V = 'infoV'
 CALL_BUILD_B = 'infoB'
 
 BUILD_INFO = 'Доп. информация'
+
+STAFF = '🔎 Поиск персонала'
+
+DOORS = '🚪 Дни открытых дверей'
+
+DIRECTION = '📜 Направления'
 

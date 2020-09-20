@@ -40,9 +40,9 @@ def user_entering_type(message):
     """
     user = User(message, bot)
     text = message.text
-    
+
     if (text == B.START_STUD):
-        user.SendMessage(text= M.START_STUDENT, 
+        user.SendMessage(text= M.START_STUDENT,
                         reply_markup = types.ReplyKeyboardRemove(),
                         state=S.START_STUD)
         start_logger.error('Пользователь %s продолжил регистрацию как студент' % message.chat.id)
@@ -70,7 +70,7 @@ def user_entering_stud_group(message):
     """
     user = User(message, bot)
     text = message.text.lower()
-    
+
     if (7 <= len(text) <= 8 and re.fullmatch(r'кт[абсм][зо][1-5]-[0-9]+', text)):
         text = text[0:2].upper() + text[2:4].lower() + text[4:] #Приводим группу к нужному формату
 
@@ -86,7 +86,7 @@ def user_entering_stud_group(message):
 def user_entering_tech_name(message):
     user = User(message, bot)
     text = message.text.lower() #введённое ФИО
-    
+
     if (re.fullmatch(r'\w+', text) or re.fullmatch(r'\w+ \w[.] \w[.]', text)):
         text = text[0].upper() + text[1:]#Приводим текст к нужному формату
         for i in re.finditer(r'\w[.]', text):
@@ -98,4 +98,4 @@ def user_entering_tech_name(message):
         start_logger.error('Пользователь %s ввёл инициалы: %s' % (message.chat.id, text))
     else:
         start_logger.error("Пользователь %s некорректно ввёл инициалы: %s" % (message.chat.id, text))
-        user.SendMessage(text = M.ERROR_WRONG_CHOICE)
+        user.SendMessage(text = M.ERROR_WRONG_INPUT)

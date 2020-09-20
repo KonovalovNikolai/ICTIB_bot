@@ -56,7 +56,7 @@ def Write_answer(message):
     user.BackToMain(M.ANSWER_SENDED)
 
     if(quest_id):
-        quest = user.GetQuestById(message.id)
+        quest = user.GetQuestById(quest_id)
 
         if quest:
             user.SendMessageToAnotherUser(chat_id= quest[0],
@@ -87,7 +87,7 @@ def WriteAnswer(call):
     if(user.type == U.STUDENT):
         quest_id = call.message.text.split('\n')[0]
         quest_id = re.search(r'\d+', quest_id).group(0)
-        
+
         user.SetQuestBrige(quest_id)
         user.SendMessage(text=M.ENTER_ANSWER,
                         reply_markup=back_kb,

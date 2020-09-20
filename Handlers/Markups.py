@@ -24,18 +24,19 @@ day_choose_search_kb.row(B.BACK)
 main_markup_stud_kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 main_markup_stud_kb.row(B.MAIN_MENU_TTABLE)
 main_markup_stud_kb.add(B.ANSWER, B.FOLLOWS)
-main_markup_stud_kb.add(B.BUILDINGS, B.RETAKE, 'Персонал')
+main_markup_stud_kb.add(B.BUILDINGS, B.RETAKE, B.STAFF)
 main_markup_stud_kb.row(B.SETTINGS)
 #Для преподов
 main_markup_teach_kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 main_markup_teach_kb.row(B.MAIN_MENU_TTABLE)
-main_markup_teach_kb.row(B.FOLLOWS)
+main_markup_teach_kb.add(B.FOLLOWS, B.STAFF)
 main_markup_teach_kb.row(B.SETTINGS)
 #Для абитуриентов
 main_markup_abiturient_kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 main_markup_abiturient_kb.row(B.QUESTION)
 main_markup_abiturient_kb.row(B.FOLLOWS)
-main_markup_abiturient_kb.row(B.BUILDINGS, 'Направления', 'Двери')
+main_markup_abiturient_kb.row(B.BUILDINGS, B.DIRECTION)
+main_markup_abiturient_kb.add(B.DOORS)
 main_markup_abiturient_kb.row(B.SETTINGS)
 
 #/start

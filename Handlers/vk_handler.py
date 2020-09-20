@@ -35,7 +35,7 @@ def send_inline_follow_menu(message):
 @bot.callback_query_handler(func=lambda call: call.data.startswith("vk"))
 def set_inline_follow(call):
     user = User(call.message, bot)
-
+    bot.answer_callback_query(call.id)
     user.UpdateVK(call.data)
     vk = user.GetUserVK()
     user.EditMessageReplyMarkup(create_kb(vk))
