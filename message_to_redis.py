@@ -64,6 +64,6 @@ A = {
     M.DOORS: 'Нет дней открытых дверей.'
 }
 
-with redis.Redis(db=1) as r:
+with redis.Redis(password='QzEcTb123789' ,db=1) as r:
     for i in A.keys():
         r.set(i, A[i])

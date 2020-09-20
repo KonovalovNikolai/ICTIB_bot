@@ -5,10 +5,10 @@ class RedisHelper:
         self.db_users_states = 0
         self.db_messages = 1
         self.db_vk = 3
-        self.password = None
+        self.password = 'QzEcTb123789'
 
     def SetVKPost(self, vk, post):
-        with redis.Redis(db=self.db_vk) as db:
+        with redis.Redis(password=self.password, db=self.db_vk) as db:
             db.hset(vk, 'Post', post)
 
     def GetVKPost(self, vk):
@@ -21,11 +21,11 @@ class RedisHelper:
                 return 0
 
     def GetVKID(self, vk):
-        with redis.Redis(db=self.db_vk) as db:
+        with redis.Redis(password=self.password, db=self.db_vk) as db:
             return int(db.hget(vk, 'ID'))
 
     def GetVKUsers(self, vk):
-        with redis.Redis(db=self.db_vk) as db:
+        with redis.Redis(password=self.password, db=self.db_vk) as db:
             return db.hkeys(vk)
 
     def SetState(self, user_id, value: int):
@@ -33,7 +33,7 @@ class RedisHelper:
         Установить состояние value пользователю по id
         value: int
         """
-        with redis.Redis(db=self.db_users_states) as db:
+        with redis.Redis(password=self.password, db=self.db_users_states) as db:
             db.hset(user_id, 'state', value)
 
     def SetQuestBrige(self, user_id, quest_id):
@@ -41,11 +41,11 @@ class RedisHelper:
         Записать в бд id вопроса по ключу id пользователя, отвечающего на вопрос
         Запись существует 1 час
         """
-        with redis.Redis(db=self.db_users_states) as db:
+        with redis.Redis(password=self.password, db=self.db_users_states) as db:
             db.hset(user_id, 'brige', quest_id)
 
     def SetExpend(self, user_id, group = None, day=None):
-        with redis.Redis(db=self.db_users_states) as db:
+        with redis.Redis(password=self.password, db=self.db_users_states) as db:
             if not group:
                 if not db.hexists(user_id, 'expend_gp'):
                     db.hset(user_id, 'expend_gp', 'КТбо2-6')
@@ -61,7 +61,7 @@ class RedisHelper:
         Возвращает целое число
         Если пользователя нет в бд, то None
         """
-        with redis.Redis(db=self.db_users_states) as db:
+        with redis.Redis(password=self.password, db=self.db_users_states) as db:
             ret = db.hget(user_id, 'state')
             if ret:
                 return int(ret)
@@ -73,7 +73,7 @@ class RedisHelper:
         Взять из бд текст сообщения
         value: str
         """
-        with redis.Redis(db=self.db_messages) as db:
+        with redis.Redis(password=self.password, db=self.db_messages) as db:
             ret = db.get(value)
             if ret:
                 return ret.decode("utf-8")
@@ -85,7 +85,7 @@ class RedisHelper:
         Взять id вопроса по id пользователя
         Удаляет запись
         """
-        with redis.Redis(db=self.db_users_states) as db:
+        with redis.Redis(password=self.password, db=self.db_users_states) as db:
             quest = db.hget(user_id, 'brige')
             if quest:
                 db.hdel(user_id, 'brige')
@@ -94,7 +94,7 @@ class RedisHelper:
                 return None
 
     def GetExpend(self, user_id):
-        with redis.Redis(db=self.db_users_states) as db:
+        with redis.Redis(password=self.password, db=self.db_users_states) as db:
             res = [None, None]
             tmp = db.hget(user_id, 'expend_gp')
             if(tmp):
@@ -111,14 +111,14 @@ class RedisHelper:
             return res
 
     def ChangeVK(self, user_id, vk):
-        with redis.Redis(db=self.db_vk) as db:
+        with redis.Redis(password=self.password, db=self.db_vk) as db:
             if not db.hexists(vk, user_id):
                 db.hset(vk, user_id, 1)
                 return
             db.hdel(vk, user_id)
 
     def CheckUserVK(self, user_id):
-        with redis.Redis(db=self.db_vk) as db:
+        with redis.Redis(password=self.password, db=self.db_vk) as db:
             vk = [0, 0, 0]
             for i in range(1, 4):
                 vk[i - 1] = db.hexists("vk" + str(i), user_id)
@@ -128,8 +128,8 @@ class RedisHelper:
         """
         Удалить пользователя из бд состояний по id
         """
-        with redis.Redis(db=self.db_users_states) as db:
+        with redis.Redis(password=self.password, db=self.db_users_states) as db:
             db.delete(user_id)
-        with redis.Redis(db=self.db_vk) as db:
+        with redis.Redis(password=self.password, db=self.db_vk) as db:
             for i in db.keys('*'):
                 db.hdel(i, user_id)
