@@ -14,7 +14,7 @@ clear_logger = logging.getLogger('Bot.clear_handle')
                     func = lambda message: User(message).GetUserState() == S.NORMAL)
 def ClearComand(message):
     """
-    Rоманда удаления пользователя из базы данных
+    Команда удаления пользователя из базы данных
     В основном нужна для отладки
     Только из основного состояния
     """
@@ -41,12 +41,12 @@ def user_entering_type(message):
                         reply_markup = types.ReplyKeyboardRemove())
 
         clear_logger.error("Пользователь %s потвердил удаление" % message.chat.id)
-    
+
     elif (text == B.NO):
         user.BackToMain(M.CLEAR_CANCEL)
 
         clear_logger.error("Пользователь %s отменил удаление" % message.chat.id)
-    
+
     else:
         user.SendMessage(text = M.ERROR_WRONG_CHOICE)
 

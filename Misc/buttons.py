@@ -52,6 +52,8 @@ CALL_SEND_ANSWER = 'AnswerQuestion'
 NEXT = '>>>'
 CALL_NEXT = 'NextQuestion'
 
+RETAKE = 'Пересдачи'
+
 BUILD_A = 'А'
 BUILD_G = 'Г'
 BUILD_D = 'Д'

@@ -20,14 +20,10 @@ day_to_number = {
     'суббота':5
 }
 
-search = {
-
-}
-
-def CreateExpendKb(gp, day):
+def CreateExpendKb(exp):
     expend_kb = types.InlineKeyboardMarkup(row_width=2)
-    btn1 = types.InlineKeyboardButton(text = gp, callback_data= B.CALL_SEARCH_GP)
-    btn2 = types.InlineKeyboardButton(text = day, callback_data= B.CALL_SEARCH_DAY)
+    btn1 = types.InlineKeyboardButton(text = exp[0], callback_data= B.CALL_SEARCH_GP)
+    btn2 = types.InlineKeyboardButton(text = exp[1], callback_data= B.CALL_SEARCH_DAY)
     btn3 = types.InlineKeyboardButton(text = B.SEARCH_T, callback_data= B.CALL_SEARCH_T)
     expend_kb.add(btn1, btn2, btn3)
     return expend_kb
@@ -94,11 +90,11 @@ def send_timetable(message):
         user.BackToMain()
 
     elif (text == B.EXTENDED_T.lower()):
-        user.GetUserInfo()
-        user.SendMessage(text='Расширенный поиск расписания.\nПоиск для: {}\nДень: {}'.format(user.group, 'Сегодня'),
-                        raw=False,
-                        reply_markup=CreateExpendKb(user.group, 'Сегодня'))
-        search[user.id] = [user.group, 'Сегодня']
+        user.SetExpend()
+        exp = user.GetExpend()
+        user.SendMessage(text=M.EXPENDED_SEARCH,
+                        form = exp,
+                        reply_markup=CreateExpendKb(exp))
 
     #Авторасписание
     elif (text == B.AUTO_TABLE.lower()):
@@ -119,30 +115,22 @@ def send_timetable(message):
 @bot.message_handler(func = lambda message: User(message).GetUserState() == S.SEARCH_GP)
 def Set_GP(message):
     user = User(message, bot)
-    if(search.get(user.id) != None):
-        search[user.id][0] = message.text
-    else:
-        search[user.id] = [message.text, 'Сегодня']
-
-    s = search[user.id]
-    user.SendMessage(text='Расширенный поиск расписания.\nПоиск для: {}\nДень: {}'.format(*s),
-                    raw=False,
-                    reply_markup=CreateExpendKb(s[0], s[1]))
+    user.SetExpend(group=message.text)
+    exp = user.GetExpend()
+    user.SendMessage(text=M.EXPENDED_SEARCH,
+                        form = exp,
+                        reply_markup=CreateExpendKb(exp))
 
 @bot.message_handler(func = lambda message: User(message).GetUserState() == S.SEARCH_DAY)
 def Set_Day(message):
     user = User(message, bot)
     text = message.text.lower()
     if(text in day_to_number or text == B.TODAY.lower() or text == B.TOMORROW.lower()):
-        if(search.get(user.id) != None):
-            search[user.id][1] = message.text
-        else:
-            search[user.id] = ['КТбо2-6', message.text]
-
-        s = search[user.id]
-        user.SendMessage(text='Расширенный поиск расписания.\nПоиск для: {}\nДень: {}'.format(*s),
-                        raw=False,
-                        reply_markup=CreateExpendKb(s[0], s[1]))
+        user.SetExpend(day=message.text)
+        exp = user.GetExpend()
+        user.SendMessage(text=M.EXPENDED_SEARCH,
+                        form = exp,
+                        reply_markup=CreateExpendKb(exp))
     else:
         timetable_logger.error("Пользователь %s сделал неправильный выбор: %s" % (message.chat.id, text))
         user.SendMessage(text= M.ERROR_WRONG_CHOICE)
@@ -152,8 +140,7 @@ def Set_Day(message):
 def change_s_gp(call):
     bot.answer_callback_query(call.id)
     user = User(call.message, bot)
-    user.SendMessage(text='Давайте определим, чьё расписание мы ищем. Введите группу, Фамилию/ФИО преподавателя или кабинет.',
-                    raw=False,
+    user.SendMessage(text=M.EXPENDED_GP,
                     reply_markup=back_kb,
                     state=S.SEARCH_GP)
 
@@ -161,8 +148,7 @@ def change_s_gp(call):
                             User(call.message).GetUserState() > 2)
 def change_s_day(call):
     user = User(call.message, bot)
-    user.SendMessage(text='Выберите день.',
-                    raw=False,
+    user.SendMessage(text=M.EXPENDED_DAY,
                     reply_markup=day_choose_search_kb,
                     state=S.SEARCH_DAY)
 
@@ -170,19 +156,15 @@ def change_s_day(call):
 def Send_search_t(call):
     user = User(call.message, bot)
     bot.answer_callback_query(call.id)
-    user.EditMessageReplyMarkup()
-    try:
-        s = search.pop(user.id)
-    except:
-        s = None
-    if(s != None):
-        s[1] = s[1].lower()
-        if(s[1] in day_to_number):
-            res = GetTimetable(name = s[0], weekday= day_to_number[s[1]])
-        elif(s[1] == B.TODAY.lower()):
-            res = GetTimetable(name = s[0], day = 0)
-        elif(s[1] == B.TOMORROW.lower()):
-            res = GetTimetable(name = s[0], day = 1)
-        user.SendMessage(text= res, raw=False)
-        user.BackToMain()
+    #user.EditMessageReplyMarkup()
+    exp = user.GetExpend()
+    exp[1] = exp[1].lower()
+    if(exp[1] in day_to_number):
+        res = GetTimetable(name = exp[0], weekday= day_to_number[exp[1]])
+    elif(exp[1] == B.TODAY.lower()):
+        res = GetTimetable(name = exp[0], day = 0)
+    elif(exp[1] == B.TOMORROW.lower()):
+        res = GetTimetable(name = exp[0], day = 1)
+    user.SendMessage(text= res, raw=False)
+    user.BackToMain()
 

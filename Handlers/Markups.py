@@ -24,7 +24,7 @@ day_choose_search_kb.row(B.BACK)
 main_markup_stud_kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 main_markup_stud_kb.row(B.MAIN_MENU_TTABLE)
 main_markup_stud_kb.add(B.ANSWER, B.FOLLOWS)
-main_markup_stud_kb.add(B.BUILDINGS, 'Переcдачи', 'Персонал')
+main_markup_stud_kb.add(B.BUILDINGS, B.RETAKE, 'Персонал')
 main_markup_stud_kb.row(B.SETTINGS)
 #Для преподов
 main_markup_teach_kb = types.ReplyKeyboardMarkup(resize_keyboard=True)

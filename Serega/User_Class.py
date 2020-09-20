@@ -40,6 +40,12 @@ class User:
     def SetState(self, state: int):
         RedisHelper().SetState(self.id, state)
 
+    def SetExpend(self, group = None, day = None):
+        RedisHelper().SetExpend(self.id, group, day)
+
+    def GetExpend(self):
+        return RedisHelper().GetExpend(self.id)
+
     def GetUserInfo(self):
         self.SetDB()
         info = self.db.TakeInfo(self.id)
@@ -150,16 +156,7 @@ class User:
         if state != None:
             self.SetState(state)
 
-    def SendMessageToAnotherUser(
-        self,
-        chat_id,
-        text,
-        raw=True,
-        reply_to_message_id=None,
-        form: list = None,
-        reply_markup=None,
-        parse_mode=None,
-    ):
+    def SendMessageToAnotherUser( self, chat_id, text, raw=True, reply_to_message_id=None, form: list = None, reply_markup=None, parse_mode=None):
         if raw:
             text = self.GetMessage(text)
             if form:
@@ -198,9 +195,7 @@ class User:
                 reply_markup=reply_markup,
             )
 
-    def EditMessageText(
-        self, text, reply_markup=None, parse_mode=None, form: list = None
-    ):
+    def EditMessageText(self, text, reply_markup=None, parse_mode=None, form: list = None):
         text = self.GetMessage(text)
         if form:
             text = text.format(*form)

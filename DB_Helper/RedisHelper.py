@@ -1,15 +1,9 @@
 import redis
 
-
-# Модуль для работы с Redis
-# db = 0 - состояния пользователь
-# db = 1 - текст сообщений
-# db = 2 - переход для отправки ответа
 class RedisHelper:
     def __init__(self):
         self.db_users_states = 0
         self.db_messages = 1
-        self.db_quests = 2
         self.db_vk = 3
         self.password = None
 
@@ -19,16 +13,26 @@ class RedisHelper:
         value: int
         """
         with redis.Redis(db=self.db_users_states) as db:
-            db.set(user_id, value)
+            db.hset(user_id, 'state', value)
 
     def SetQuestBrige(self, user_id, quest_id):
         """
         Записать в бд id вопроса по ключу id пользователя, отвечающего на вопрос
         Запись существует 1 час
         """
-        with redis.Redis(db=self.db_quests) as db:
-            db.set(user_id, quest_id)
-            db.expire(user_id, 3600)
+        with redis.Redis(db=self.db_users_states) as db:
+            db.hset(user_id, 'brige', quest_id)
+
+    def SetExpend(self, user_id, group = None, day=None):
+        with redis.Redis(db=self.db_users_states) as db:
+            if not group:
+                if not db.hexists(user_id, 'expend_gp'):
+                    db.hset(user_id, 'expend_gp', 'КТбо2-6')
+                    db.hset(user_id, 'expend_day', 'Сегодня')
+            else:
+                db.hset(user_id, 'expend_gp', group)
+            if(day):
+                db.hset(user_id, 'expend_day', day)
 
     def GetState(self, user_id):
         """
@@ -37,7 +41,7 @@ class RedisHelper:
         Если пользователя нет в бд, то None
         """
         with redis.Redis(db=self.db_users_states) as db:
-            ret = db.get(user_id)
+            ret = db.hget(user_id, 'state')
             if ret:
                 return int(ret)
             else:
@@ -60,13 +64,30 @@ class RedisHelper:
         Взять id вопроса по id пользователя
         Удаляет запись
         """
-        with redis.Redis(db=self.db_quests) as db:
-            quest = db.get(user_id)
+        with redis.Redis(db=self.db_users_states) as db:
+            quest = db.hget(user_id, 'brige')
             if quest:
-                db.delete(user_id)
+                db.hdel(user_id, 'brige')
                 return int(quest)
             else:
                 return None
+
+    def GetExpend(self, user_id):
+        with redis.Redis(db=self.db_users_states) as db:
+            res = [None, None]
+            tmp = db.hget(user_id, 'expend_gp')
+            if(tmp):
+                res[0] = tmp.decode("utf-8")
+            else:
+                res[0] = 'КТбо2-6'
+                db.hset(user_id, 'expend_gp', res[0])
+            tmp = db.hget(user_id, 'expend_day')
+            if(tmp):
+                res[1] = tmp.decode("utf-8")
+            else:
+                res[1] = 'Сегодня'
+                db.hset(user_id, 'expend_gp', res[1])
+            return res
 
     def ChangeVK(self, user_id, vk):
         with redis.Redis(db=self.db_vk) as db:
@@ -87,8 +108,6 @@ class RedisHelper:
         Удалить пользователя из бд состояний по id
         """
         with redis.Redis(db=self.db_users_states) as db:
-            db.delete(user_id)
-        with redis.Redis(db=self.db_quests) as db:
             db.delete(user_id)
         with redis.Redis(db=self.db_vk) as db:
             for i in db.keys('*'):

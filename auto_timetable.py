@@ -1,5 +1,6 @@
 from config import bot
 from Serega.Timetable import GetTimetable
+from Serega.User_Class import User
 from DB_Helper.SQLHelper import SQLHelper
 
 group_base = 'КТ{}{}{}-{}'
@@ -29,4 +30,3 @@ for teacher in teachers:
                         text = res)
 
 db_worker.close()
-                    
