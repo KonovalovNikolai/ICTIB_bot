@@ -12,7 +12,7 @@ class RedisHelper:
             db.hset(vk, 'Post', post)
 
     def GetVKPost(self, vk):
-        with redis.Redis(db =self.db_vk) as db:
+        with redis.Redis(password=self.password, db=self.db_vk) as db:
             ret = db.hget(vk, 'Post')
             if (ret):
                 return int(ret)
