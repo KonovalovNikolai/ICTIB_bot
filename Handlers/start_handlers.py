@@ -59,7 +59,7 @@ def user_entering_type(message):
         start_logger.error('Пользователь %s зарегистрировался как абитуриент' % message.chat.id)
 
     else:
-        user.SendMessage(text = M.ERROR_WRONG_CHOICE)
+        user.SendMessage(text = M.START_GREETINGS, reply_markup = start_markup_kb)
         start_logger.error("Пользователь %s сделал неправильный выбор: %s" % (message.chat.id, text))
 
 #Запись группы студента
