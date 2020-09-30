@@ -47,14 +47,15 @@ def get_lecturer(intext : str = ''):
         tags_p = text.find_all('p')
 
         # Парсинг кафедры и звания
-        department = ""
+        department = []
+        list_dep = []
         for item in tags_p:
             try:
                 if item.a['href'][0] == '/':
-                    department = " ".join(item.text.replace('\n', '').split())
-                    break
+                    department.append(" ".join(item.text.replace('\n', '').split()))
             except TypeError:
                 pass
+        department = ", ".join(department)
 
         # Парсинг номеров телефонов
         phone = text.find('span', 'phones').text
