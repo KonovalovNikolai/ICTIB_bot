@@ -8,7 +8,7 @@ from Misc import *
 from .Markups import start_markup_kb
 from config import bot
 
-start_logger = logging.getLogger('Bot.start_handle')
+logger = logging.getLogger('Bot.StartHandler')
 
 #Обработка команды start
 @bot.message_handler(commands = ['start'])
@@ -22,10 +22,10 @@ def command_handler(message):
     user.GetUserInfo()
 
     if (user.type != None):
-        start_logger.error('Пользователь %s обновил UI' % message.chat.id)
+        logger.error(f'User {user.id} reload UI.')
         user.BackToMain(M.UI_RELOAD) #ответ пользователю
     else:
-        start_logger.error('Пользователь %s начал регистрацию' % message.chat.id)
+        logger.error(f'User {user.id} started registration.')
         user.SendMessage(text = M.START_GREETINGS,
                         reply_markup = start_markup_kb,
                         state = S.START)
@@ -45,22 +45,22 @@ def user_entering_type(message):
         user.SendMessage(text= M.START_STUDENT,
                         reply_markup = types.ReplyKeyboardRemove(),
                         state=S.START_STUD)
-        start_logger.error('Пользователь %s продолжил регистрацию как студент' % message.chat.id)
+        logger.error(f'User {user.id} continued registration as student.')
 
     elif (text == B.START_TEACH):
         user.SendMessage(text= M.START_TEACHER,
                         reply_markup = types.ReplyKeyboardRemove(),
                         state=S.START_TEACH)
-        start_logger.error('Пользователь %s продолжил регистрацию как препод' % message.chat.id)
+        logger.error(f'User {user.id} continued registration as teacher.')
 
     elif (text == B.START_ABITUR):
         user.AddUser(U.ABITUR, U.ABITUR)
         user.BackToMain(M.START_ABITUR)
-        start_logger.error('Пользователь %s зарегистрировался как абитуриент' % message.chat.id)
+        logger.error(f'User {user.id} ended registration as abiturient.')
 
     else:
         user.SendMessage(text = M.ERROR_WRONG_CHOICE)
-        start_logger.error("Пользователь %s сделал неправильный выбор: %s" % (message.chat.id, text))
+        logger.error(f"User {user.id} made wrong choice: {message.text}.")
 
 #Запись группы студента
 @bot.message_handler(func = lambda message: User(message).GetUserState() == S.START_STUD)
@@ -76,10 +76,10 @@ def user_entering_stud_group(message):
 
         user.AddUser(U.STUDENT, text)
         user.BackToMain(M.START_THANKS)
-        start_logger.error('Пользователь %s ввёл свою группу: %s' % (message.chat.id, text))
+        logger.error(f'User {user} ended registation as student: {text}')
     else:
         user.SendMessage(text= M.ERROR_WRONG_INPUT)
-        start_logger.error("Пользователь %s неправильно ввёл группу: %s" % (message.chat.id, text))
+        logger.error(f'User {user.id} incorrectly entered a group: {text}')
 
 #Запись имени препада
 @bot.message_handler(func = lambda message: User(message).GetUserState() == S.START_TEACH)
@@ -87,15 +87,7 @@ def user_entering_tech_name(message):
     user = User(message, bot)
     text = message.text.lower() #введённое ФИО
 
-    if (re.fullmatch(r'\w+', text) or re.fullmatch(r'\w+ \w[.] \w[.]', text)):
-        text = text[0].upper() + text[1:]#Приводим текст к нужному формату
-        for i in re.finditer(r'\w[.]', text):
-            text = text[:i.start()] + text[i.start()].upper() + text[i.start()+1:]
+    user.AddUser(U.TEACH, text)
+    user.BackToMain(M.START_THANKS)
 
-        user.AddUser(U.TEACH, text)
-        user.BackToMain(M.START_THANKS)
-
-        start_logger.error('Пользователь %s ввёл инициалы: %s' % (message.chat.id, text))
-    else:
-        start_logger.error("Пользователь %s некорректно ввёл инициалы: %s" % (message.chat.id, text))
-        user.SendMessage(text = M.ERROR_WRONG_INPUT)
+    logger.error(f'User {user} ended registation as teacher: {text}')

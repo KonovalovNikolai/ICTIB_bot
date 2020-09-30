@@ -6,7 +6,7 @@ from Misc import *
 from .Markups import back_kb, del_quest_kb, answer_kb
 from config import bot
 
-quest_logger = logging.getLogger('Bot.question_handler')
+logger = logging.getLogger('Bot.QuestionHandler')
 
 @bot.message_handler(func = lambda message: message.text == B.QUESTION
                         and User(message).GetUserState() == S.NORMAL)
@@ -20,15 +20,18 @@ def ask_question(message):
                             form = quest[1:],
                             reply_markup = del_quest_kb,
                             parse_mode = 'HTML')
+            logger.error(f"User {user.id} already have a question.")
         else:
             user.SendMessage(text= M.ASK_QUESTION,
                             reply_markup= back_kb,
                             state=S.QUESTION)
+            logger.error(f"User {user.id} enters a question.")
 
 @bot.message_handler(func = lambda message: User(message).GetUserState() == S.QUESTION)
-def writing_quest(message):
+def add_quest(message):
     user = User(message, bot)
-    user.AddQuest(message.message_id, message.text)
+    logger.error(f"User {user.id} is entering a question: {message.text}.")
+    user.AddQuest(message.text)
     user.BackToMain(M.QUEST_WRITED)
 
 @bot.message_handler(func = lambda message: message.text == B.ANSWER
@@ -46,9 +49,10 @@ def show_quest_for_stud(message):
                             parse_mode='HTML')
         else:
             user.SendMessage(text=M.NO_QUESTION)
+        logger.error(f"User {user.id} got the first question: {quest[1]}.")
 
 @bot.message_handler(func = lambda message: User(message).GetUserState() == S.WRITE_ANSWER)
-def Write_answer(message):
+def send_answer(message):
     user = User(message, bot)
 
     quest_id = user.GetQuestBrige()
@@ -71,27 +75,29 @@ def Write_answer(message):
                                             text='<i>{}</i>\n{}'.format(quest[2], message.text),
                                             parse_mode='HTML',
                                             raw=False)
+        logger.error(f"User {user.id} gave answer to question {quest_id}: {message.text}.")
 
 @bot.callback_query_handler(func = lambda call: call.data == B.CALL_DELETE_QUEST)
-def DeleteQuestion(call):
+def delete_question(call):
     user = User(call.message, bot)
     user.DeleteQuest()
     user.EditMessageText(text=M.QUEST_DELETED)
+    logger.error(f"User {user.id} deleted a question.")
 
 @bot.callback_query_handler(func = lambda call: call.data == B.CALL_SEND_ANSWER)
-def WriteAnswer(call):
+def write_answer(call):
     user = User(call.message, bot)
     user.EditMessageReplyMarkup()
-    user.GetUserInfo()
 
+    user.GetUserInfo()
     if(user.type == U.STUDENT):
         quest_id = call.message.text.split('\n')[0]
         quest_id = re.search(r'\d+', quest_id).group(0)
-
         user.SetQuestBrige(quest_id)
         user.SendMessage(text=M.ENTER_ANSWER,
                         reply_markup=back_kb,
                         state=S.WRITE_ANSWER)
+        logger.error(f"User {user.id} is writing answer to quest {quest_id}.")
 
 @bot.callback_query_handler(func = lambda call: call.data == B.CALL_NEXT)
 def NextQuest(call):
@@ -103,3 +109,4 @@ def NextQuest(call):
                         form = quest,
                         parse_mode='HTML')
     user.EditMessageReplyMarkup(reply_markup=answer_kb)
+    logger.error(f"User {user.id} got a random quest: {quest[1]}")

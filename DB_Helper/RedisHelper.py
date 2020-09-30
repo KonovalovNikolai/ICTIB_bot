@@ -125,11 +125,10 @@ class RedisHelper:
             return vk
 
     def DeleteUser(self, user_id):
-        """
-        Удалить пользователя из бд состояний по id
-        """
+        # удалить пользователя из бд состояний по id
         with redis.Redis(db=self.db_users_states) as db:
             db.delete(user_id)
+        # удаление подписок пользователя
         with redis.Redis(db=self.db_vk) as db:
             for i in db.keys('*'):
                 db.hdel(i, user_id)

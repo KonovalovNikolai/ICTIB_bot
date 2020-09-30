@@ -7,27 +7,28 @@ from .Markups import yes_no_kb
 from telebot import types
 from config import bot
 
-clear_logger = logging.getLogger('Bot.clear_handle')
+logger = logging.getLogger('Bot.ClearHandle')
 
-#Обработка команды "clear"
 @bot.message_handler(commands = ['clear'],
                     func = lambda message: User(message).GetUserState() == S.NORMAL)
-def ClearComand(message):
+def send_confirm_kb(message):
     """
+    Обработка команды clear
     Команда удаления пользователя из базы данных
     В основном нужна для отладки
     Только из основного состояния
     """
     user = User(message, bot)
+    # отправка клавиатуры потверждения
     user.SendMessage(text=M.CLEAR_СONFIRMATION,
                     reply_markup=yes_no_kb,
                     state=S.CLEAR)
 
-    clear_logger.error("Пользователь %s получил клавиатуру для потверждения удаления" % message.chat.id)
+    logger.error(f"User {user.id} got deletion confirmation button.")
 
 #Обработка подверждения
 @bot.message_handler(func = lambda message: User(message).GetUserState() == S.CLEAR)
-def user_entering_type(message):
+def confirming(message):
     """
     Обработка клавиатуры для потверждения удаления
     Только из состояния удаления
@@ -36,18 +37,17 @@ def user_entering_type(message):
     text = message.text
 
     if (text == B.YES):
+        # пользователь нажал "да"
         user.DeleteUser()
+        # прощание и удаление клавиатуры
         user.SendMessage(text=M.CLEAR_BYE,
                         reply_markup = types.ReplyKeyboardRemove())
-
-        clear_logger.error("Пользователь %s потвердил удаление" % message.chat.id)
+        logger.error(f"User {user.id} confirmed deletion.")
 
     elif (text == B.NO):
         user.BackToMain(M.CLEAR_CANCEL)
-
-        clear_logger.error("Пользователь %s отменил удаление" % message.chat.id)
+        logger.error(f"User {user.id} canceled deletion.")
 
     else:
         user.SendMessage(text = M.ERROR_WRONG_CHOICE)
-
-        clear_logger.error("Пользователь %s сделал неправильный выбор: %s" % (message.chat.id, text))
+        logger.error(f"User {user.id} made wrong choice: {message.text}.")
