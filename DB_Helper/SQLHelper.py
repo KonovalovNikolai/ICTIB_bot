@@ -111,6 +111,12 @@ class SQLHelper:
         self.cursor.execute(sql, [chat_id])
         self.connection.commit()
 
+    def ReplaceQuest(self, chat_id):
+        quest = self.TakeQuest(chat_id)
+        if (quest):
+            self.DeleteQuest(chat_id)
+            self.AddQuest(chat_id, quest[1], quest[2])
+
     #выполнить sql запрос
     def Execute(self, sql):
         '''

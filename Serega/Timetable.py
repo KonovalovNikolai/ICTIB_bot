@@ -25,7 +25,7 @@ def GetTodayDate(day):
     """
     Возвращает дату в формате: "Число Название месяца, день недели"
     Например: 26 июля, воскресенье
-    day - номер дня недели, начиная с нуля (понедельник)  
+    day - номер дня недели, начиная с нуля (понедельник)
     """
     return arrow.utcnow().shift(days = day, hours = 3).format("D MMMM, dddd", locale = "ru")
 
@@ -46,7 +46,7 @@ def GetTimetable(name, day=None, weekday=None):
         response = requests.get(url + '?query=' + name)
     except:
         #Если не получилось обратиться к серверу, то он не доступен
-        logger.error("Failed to connect to resource: %s" % name)
+        logger.error("Failed to connect to resource")
         return user.GetMessage(M.TIMETABLE_NOCONECTION) #Сообщение о неудачном подключении
 
     timetable = json.loads(response.text) #загружаем ответ в типы Python
@@ -56,10 +56,9 @@ def GetTimetable(name, day=None, weekday=None):
 
     #Проверка не пустое ли расписание
     if 'result' in timetable:
-        logger.error("No timetable for this group: %s" % name)
+        logger.error(f"No timetable for this group: {name}")
         return user.GetMessage(M.TIMETABLE_WRONGGROUP)
 
-    #date = arrow.get(datetime.datetime(2020, 2, 12), 'US/Pacific').shift(weekday = day, hours = 3)
     if(day):
         date = arrow.utcnow().shift(days = day, hours = 3) #Дата занятий
     else:
@@ -96,9 +95,9 @@ def GetTimetable(name, day=None, weekday=None):
                 flag = True
         else:
             #Нет расписания на следующую неделю
-            logger.error("No timetable for this day: %s" % day)
+            logger.error(f"No timetable for this day: {day}")
             return user.GetMessage(M.TIMETABLE_NOTABLE)
-    
+
     #Если даты совпали, то парсим расписание
     if(flag):
         text = ''
@@ -107,9 +106,9 @@ def GetTimetable(name, day=None, weekday=None):
             if table[i] != '':
                 text += "{}: {}\n {}\n\n".format(j, table[i], lesson[i])
                 j += 1
-                
-        logger.error("Timetable was created: %s" % name)
-        
+
+        logger.error(f"Timetable was created: {name}, {day}")
+
         if j > 1:
             return 'Расписание на {}.\n\n{}'.format(date.format("D MMMM, dddd", locale = "ru"), text)
         else:

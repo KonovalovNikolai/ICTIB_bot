@@ -31,71 +31,127 @@ class User:
         self.db: SQLHelper = None
 
     def SetDB(self):
+        '''
+        Создать подключение к бд, если его ещё нет
+        '''
         if not self.db:
             self.db = SQLHelper()
 
     def SetQuestBrige(self, quest_id):
+        '''
+        Создать мост для вопроса
+        '''
         RedisHelper().SetQuestBrige(self.id, quest_id)
 
     def SetState(self, state: int):
+        '''
+        Изменить состояние пользователя
+        '''
         RedisHelper().SetState(self.id, state)
 
     def SetExpend(self, group = None, day = None):
+        '''
+        Установить параметры расширенного поиска
+        '''
         RedisHelper().SetExpend(self.id, group, day)
 
     def GetExpend(self):
+        '''
+        Получить параметры расширенного поиска
+        '''
         return RedisHelper().GetExpend(self.id)
 
     def GetUserInfo(self):
+        '''
+        Записать в поля класса параметры пользователя
+        '''
         self.SetDB()
         info = self.db.TakeInfo(self.id)
         if info != None:
             _, self.type, self.group, *_ = info
 
     def GetUserQuest(self):
+        '''
+        Получить вопрос пользователя
+        '''
         self.SetDB()
         return self.db.TakeQuest(self.id)
 
     def GetQuestById(self, message_id):
+        '''
+        Получить вопрос по id вопроса
+        '''
         self.SetDB()
-        return self.db.TakeQuestById(message_id)
+        quest = self.db.TakeQuestById(message_id)
+        self.db.ReplaceQuest(quest[0])
+        return quest
 
     def GetUserState(self):
+        '''
+        Получить состояние пользователя
+        '''
         return RedisHelper().GetState(self.id)
 
     def GetQuestBrige(self):
+        '''
+        Получить мост
+        '''
         return RedisHelper().GetQuestBrige(self.id)
 
     def GetRandomQuest(self):
+        '''
+        Получить случайный вопрос
+        '''
         self.SetDB()
         return self.db.TakeRandomQuest()
 
     def GetMessage(self, value: str):
+        '''
+        Получить текст сообщения по его коду
+        '''
         return RedisHelper().GetMessage(value)
 
     def GetFirstQuest(self):
+        '''
+        Получить первый в бд вопрос
+        '''
         self.SetDB()
         return self.db.TakeFirsQuest()
 
     def GetUserVK(self):
+        '''
+        Получить подписки пользователя
+        '''
         return RedisHelper().CheckUserVK(self.id)
 
     def AddUser(self, user_type, user_group):
+        '''
+        Добавить пользователя в бд
+        '''
         self.SetDB()
         self.db.AddUser((self.id, user_type, user_group))
 
-    def AddQuest(self, message_id, text):
+    def AddQuest(self, message_text):
+        '''
+        Добавть вопрос в бд
+        '''
         self.SetDB()
-        self.db.AddQuest(self.id, message_id, text)
+        self.db.AddQuest(self.id, self.message_id, message_text)
 
     def UpdateAuto(self):
+        '''
+        Изменить параметр auto пользователя
+        '''
         self.SetDB()
         return self.db.UpdateAuto(self.id)
 
     def UpdateVK(self, vk):
+        '''
+        Изменить подписки подписки пользователя
+        '''
         RedisHelper().ChangeVK(self.id, vk)
 
-    def BackToMain(self, text=M.MAINMENU):
+    def BackToMain(self, text=M.MAINMENU, raw = True):
         """
         Функция для возврата пользователя в главное меню учитывая его тип.
         chat_id - id пользователя.
@@ -108,27 +164,27 @@ class User:
         # Отправляем текст сообщения
         if self.type == U.STUDENT:
             self.SendMessage(
-                text=text, reply_markup=main_markup_stud_kb, state=S.NORMAL
+                text=text, reply_markup=main_markup_stud_kb, state=S.NORMAL, raw=raw
             )
 
             self.logger.error(
-                "Пользователь %s вернулся в главное меню как студент" % self.id
+                 f'User {self.id} returned to main menu as student.'
             )
 
         elif self.type == U.TEACH:
             self.SendMessage(
-                text=text, reply_markup=main_markup_teach_kb, state=S.NORMAL
+                text=text, reply_markup=main_markup_teach_kb, state=S.NORMAL, raw=raw
             )
             self.logger.error(
-                "Пользователь %s вернулся в главное меню как препод" % self.id
+                f'User {self.id} returned to main menu as teacher.'
             )
 
         elif self.type == U.ABITUR:
             self.SendMessage(
-                text=text, reply_markup=main_markup_abiturient_kb, state=S.NORMAL
+                text=text, reply_markup=main_markup_abiturient_kb, state=S.NORMAL, raw=raw
             )
             self.logger.error(
-                "Пользователь %s вернулся в главное меню как абитуриент" % self.id
+                f'User {self.id} returned to main menu as abiturient.'
             )
 
     def SendMessage(self, text, raw=True, reply_to_message_id=None, form: list = None, reply_markup=None, parse_mode=None, state=None):

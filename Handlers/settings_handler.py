@@ -7,6 +7,8 @@ from .Markups import yes_no_kb, start_markup_kb
 from Misc import *
 from config import bot
 
+logger = logging.getLogger("Bot.SettingsHandler")
+
 def CreateSettingKb(user_type, user_group):
     kb = types.ReplyKeyboardMarkup()
 
@@ -19,9 +21,7 @@ def CreateSettingKb(user_type, user_group):
         else:
             kb.add(B.TYPE + U.RU_TEACH)
             kb.add(B.NAME + user_group)
-        
-        kb.add(B.ALERTS)
-    
+
     kb.add(B.CONTACT, B.INFO)
     kb.add(B.DELETE)
     kb.add(B.BACK)
@@ -37,6 +37,7 @@ def choose_settings(message):
     user.SendMessage(text= M.SETTINGS_MENU,
                     reply_markup= CreateSettingKb(user.type, user.group),
                     state=S.SETTINGS)
+    logger.error(f"User {user.id} got a settings menu.")
 
 @bot.message_handler(func = lambda message: User(message).GetUserState() == S.SETTINGS)
 def settings_menu(message):
@@ -44,30 +45,35 @@ def settings_menu(message):
 
     text = message.text
 
-    if (text == B.CONTACT): 
+    if (text == B.CONTACT):
         user.SendMessage(text= M.DEV)
+        logger.error(f"User {user.id} got a developers contacts.")
     elif (text == B.INFO):
         user.SendMessage(text= M.ABOUT)
-    elif (text == B.ALERTS):
-        pass
+        logger.error(f"User {user.id} got a bot information.")
     elif (text == B.DELETE):
         user.SendMessage(text = M.CLEAR_СONFIRMATION,
                         reply_markup = yes_no_kb,
                         state=S.CLEAR)
+        logger.error(f"User {user.id} got deletion confirmation button.")
     elif (text.startswith(B.TYPE)):
         user.DeleteUserSQL()
         user.SendMessage(text= M.CHANGE_TYPE,
                         reply_markup= start_markup_kb,
                         state=S.START)
+        logger.error(f"User {user.id} changed user type.")
     elif (text.startswith(B.GROUP)):
         user.DeleteUserSQL()
         user.SendMessage(text= M.CHANGE_GROUPE,
                     reply_markup= types.ReplyKeyboardRemove(),
                     state=S.START_STUD)
+        logger.error(f"User {user.id} changed user group.")
     elif (text.startswith(B.NAME)):
         user.DeleteUserSQL()
         user.SendMessage(text= M.CHANGE_NAME,
                         reply_markup= types.ReplyKeyboardRemove(),
                         state=S.START_TEACH)
+        logger.error(f"User {user.id} changed user name.")
     else:
         user.SendMessage(text = M.ERROR_WRONG_CHOICE)
+        logger.error(f"User {user.id} made wrong choice: {message.text}.")

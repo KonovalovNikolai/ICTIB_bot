@@ -37,7 +37,7 @@ def check_new_posts(VK):
                 db.SetVKPost(VK, item['id'])
 
                 users = db.GetVKUsers(VK)[3:]
-                #print(users)
+                print(users)
 
                 text=''
                 for line in item['text'].split('\n', maxsplit = 4)[:4]:
@@ -45,17 +45,18 @@ def check_new_posts(VK):
                     line = re.sub(r'\]\s', '', line)
 
                     text+=line + '\n'
-                text += '<b>...</b>'
-
-                for user in users:
-                    user = int(user)
-                    bot.send_message(chat_id=user,
-                                    text= 'Обновление в группе "<a href="{}"><b>{}</b></a>".\n{}'.format(
+                text= 'Обновление в группе "<a href="{}"><b>{}</b></a>".\n{}{}'.format(
                                             'https://vk.com/{}?w=wall-{}_{}'.format(DATA['response']['groups'][0]['screen_name'],
                                                             DATA['response']['groups'][0]['id'],
                                                             item['id']),
                                             DATA['response']['groups'][0]['name'],
-                                            text),
+                                            text,
+                                            '<b>...</b>')
+
+                for user in users:
+                    user = int(user)
+                    bot.send_message(chat_id=user,
+                                    text= text,
                                     parse_mode='HTML')
                 return
 
