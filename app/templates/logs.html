@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form action="" method="post" novalidate>
+        {{ log.hidden_tag() }}
+        <div>
+            {{ log.username(size=20) }}
+            {{ log.password(size=20) }}
+        </div>
+        <div>
+            {{ log.botlog }}
+            {{ log.vklog }}
+        </div>
+    </form>
+    <div>
+        {% if file %}
+        {% for line in file %}
+            {{line}}<br>
+        {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}
