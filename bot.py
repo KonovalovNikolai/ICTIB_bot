@@ -1,9 +1,10 @@
 import logging
-import handlers
 import ssl
 import telebot
 from config import bot, TOKEN
 from aiohttp import web
+
+import Handlers
 
 API_TOKEN = TOKEN
 

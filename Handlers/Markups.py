@@ -5,29 +5,38 @@ from Misc import B
 back_kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 back_kb.add(B.BACK)
 
-day_choose_kb = types.ReplyKeyboardMarkup(row_width=3)
+day_choose_kb = types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
+day_choose_kb.add(B.TODAY, B.TOMORROW)
 day_choose_kb.add(B.DAYS_MON, B.DAYS_TUE, B.DAYS_WED)
 day_choose_kb.add(B.DAYS_THU, B.DAYS_FRI, B.DAYS_SAT)
+day_choose_kb.add(B.EXTENDED_T)
 day_choose_kb.row(B.AUTO_TABLE)
 day_choose_kb.row(B.BACK)
+
+day_choose_search_kb = types.ReplyKeyboardMarkup(row_width=3)
+day_choose_search_kb.add(B.TODAY, B.TOMORROW)
+day_choose_search_kb.add(B.DAYS_MON, B.DAYS_TUE, B.DAYS_WED)
+day_choose_search_kb.add(B.DAYS_THU, B.DAYS_FRI, B.DAYS_SAT)
+day_choose_search_kb.row(B.BACK)
 
 #Основная клавиатура
 #Для студентов
 main_markup_stud_kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 main_markup_stud_kb.row(B.MAIN_MENU_TTABLE)
 main_markup_stud_kb.add(B.ANSWER, B.FOLLOWS)
-main_markup_stud_kb.add(B.BUILDINGS, 'Перездачи', 'Персонал')
+main_markup_stud_kb.add(B.BUILDINGS, B.RETAKE, B.STAFF)
 main_markup_stud_kb.row(B.SETTINGS)
 #Для преподов
 main_markup_teach_kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 main_markup_teach_kb.row(B.MAIN_MENU_TTABLE)
-main_markup_teach_kb.row(B.FOLLOWS)
+main_markup_teach_kb.add(B.FOLLOWS, B.STAFF)
 main_markup_teach_kb.row(B.SETTINGS)
 #Для абитуриентов
 main_markup_abiturient_kb = types.ReplyKeyboardMarkup(resize_keyboard=True)
 main_markup_abiturient_kb.row(B.QUESTION)
 main_markup_abiturient_kb.row(B.FOLLOWS)
-main_markup_abiturient_kb.row(B.BUILDINGS, 'Направления', 'Двери')
+main_markup_abiturient_kb.row(B.BUILDINGS, B.DIRECTION)
+main_markup_abiturient_kb.add(B.DOORS)
 main_markup_abiturient_kb.row(B.SETTINGS)
 
 #/start

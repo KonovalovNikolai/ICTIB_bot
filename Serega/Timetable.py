@@ -1,6 +1,5 @@
-from DB_Helper.SQLHelper import SQLHelper
-from DB_Helper.RedisHelper import get_message
 from Misc import message as M
+from .User_Class import User
 import requests
 import logging
 import arrow
@@ -30,7 +29,7 @@ def GetTodayDate(day):
     """
     return arrow.utcnow().shift(days = day, hours = 3).format("D MMMM, dddd", locale = "ru")
 
-def GetTimetable(name, day):
+def GetTimetable(name, day=None, weekday=None):
     """
     Парсинг расписания.
     Обращаемся к ictis.online по группе, получаем json ответ
@@ -41,26 +40,39 @@ def GetTimetable(name, day):
     name - группа пользователя
     day - номер дня недели, начиная с нуля (понедельник)
     """
+    user = User()
     #Обратиться к серверу для получения расписания
     try:
         response = requests.get(url + '?query=' + name)
     except:
         #Если не получилось обратиться к серверу, то он не доступен
         logger.error("Failed to connect to resource: %s" % name)
-        return get_message(M.TIMETABLE_NOCONECTION) #Сообщение о неудачном подключении
+        return user.GetMessage(M.TIMETABLE_NOCONECTION) #Сообщение о неудачном подключении
 
     timetable = json.loads(response.text) #загружаем ответ в типы Python
-    
+    if 'choices' in timetable:
+        response = requests.get(url + '?query=' + timetable['choices'][0]['name'])
+        timetable = json.loads(response.text) #загружаем ответ в типы Python
+
     #Проверка не пустое ли расписание
     if 'result' in timetable:
         logger.error("No timetable for this group: %s" % name)
-        return get_message(M.TIMETABLE_WRONGGROUP)
+        return user.GetMessage(M.TIMETABLE_WRONGGROUP)
 
     #date = arrow.get(datetime.datetime(2020, 2, 12), 'US/Pacific').shift(weekday = day, hours = 3)
-    date = arrow.utcnow().shift(weekday = day, hours = 3) #Дата занятий
+    if(day):
+        date = arrow.utcnow().shift(days = day, hours = 3) #Дата занятий
+    else:
+        date = arrow.utcnow().shift(weekday = weekday, hours = 3) #Дата занятий
 
-    #Проверяем совпадение дат
+    day = date.weekday()
+
+    if(day == 6):
+        return user.GetMessage(M.SUNDAY)
+
+
     flag = False
+    #Проверяем совпадение дат
     table = timetable['table']['table'][day + 2]
     number = table[0]
     if(date.format("D  MMMM", locale="ru") in number):
@@ -68,7 +80,7 @@ def GetTimetable(name, day):
         flag = True
 
     #Если даты не совпали, то проверяем следующую неделю
-    if(flag == False):
+    if(not flag):
         #Проверяем, есть ли на следующую неделю расписание
         week = timetable['table']['week'] + 1
         #Если есть, то делаем новый запрос
@@ -85,13 +97,13 @@ def GetTimetable(name, day):
         else:
             #Нет расписания на следующую неделю
             logger.error("No timetable for this day: %s" % day)
-            return get_message(M.TIMETABLE_NOTABLE)
+            return user.GetMessage(M.TIMETABLE_NOTABLE)
     
     #Если даты совпали, то парсим расписание
     if(flag):
         text = ''
         j = 1
-        for i in range(1, 7):
+        for i in range(1, 8):
             if table[i] != '':
                 text += "{}: {}\n {}\n\n".format(j, table[i], lesson[i])
                 j += 1
@@ -104,4 +116,4 @@ def GetTimetable(name, day):
             return 'Расписание на {}.\nЗанятий нет\n'.format(date.format("D MMMM, dddd", locale = "ru"))
     else:
         #Если не совпадали, то расписание на этот день нет
-        return get_message(M.TIMETABLE_NOTABLE)
+        return user.GetMessage(M.TIMETABLE_NOTABLE)
