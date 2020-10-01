@@ -38,7 +38,7 @@ BuildsInfo = {
 buildings_kb.add(*[types.InlineKeyboardButton(text= i, callback_data= i) for i in Buildings.keys()])
 
 @bot.message_handler(func = lambda message: message.text == B.BUILDINGS and
-                        User(message).GetUserState == S.NORMAL)
+                        User(message).GetUserState() == S.NORMAL)
 def send_buildings_list(message):
     '''Отправка клавиатуры зданий'''
     user = User(message, bot)
