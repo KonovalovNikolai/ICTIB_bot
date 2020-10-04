@@ -65,12 +65,9 @@ def post():
                 return render_template('post.html', title='Post', forms=post)
             else:
                 users = ''
-                if('All' in post.checks.data):
-                    users = '*'
-                else:
-                    for user in post.checks.data:
-                        users += "'" + user + "'" + ' or '
-                    users = users[:len(users)-4]
+                for user in post.checks.data:
+                    users += "'" + user + "'" + ' or '
+                users = users[:len(users)-4]
                 text = post.line.data
                 sql = 'SELECT id FROM user WHERE type={}'.format(users)
                 connection = sqlite3.connect(database = "Database.db", timeout= 5)
@@ -78,7 +75,7 @@ def post():
                 cursor.execute(sql)
                 res = cursor.fetchall()
                 for user_id in res:
-                    bot.send_message(chat_id=user_id,text=text)
+                    bot.send_message(chat_id=user_id[0],text=text)
 
         else:
             flash('incorrect username or password')
