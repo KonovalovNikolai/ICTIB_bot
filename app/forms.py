@@ -24,7 +24,7 @@ class EditMessage(FlaskForm):
 
 class Post(LoginForm):
     line = StringField('message', widget=TextArea() ,validators=[DataRequired()])
-    choice = ['All', 'stud', 'teach', 'abitur']
+    choice = ['stud', 'teach', 'abitur']
     data = [(a,a) for a in choice]
     checks = MultiCheckboxField('Label', choices=data)
     post = SubmitField('post')
