@@ -10,6 +10,7 @@
         <div>
             Bot admin panel:
             <a href="{{ url_for('logs') }}">Logs</a>
+            <a href="{{ url_for('message') }}">Message</a>
         </div>
         <hr>
         {% with messages = get_flashed_messages() %}

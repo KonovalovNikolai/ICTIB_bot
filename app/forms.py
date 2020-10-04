@@ -9,3 +9,10 @@ class LoginForm(FlaskForm):
 class BotLogSelect(LoginForm):
     botlog = SubmitField('botlog.log')
     vklog = SubmitField('vklog.log')
+
+class MessageShow(LoginForm):
+    show = SubmitField('show')
+
+class EditMessage(FlaskForm):
+    line = StringField('Username', validators=[DataRequired()])
+    edit = SubmitField('edit')
