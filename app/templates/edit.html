@@ -15,9 +15,13 @@
         {% if edt %}
             <form action="" method="post" novalidate>
                 {{ edt.hidden_tag() }}
-                <p>{{mess}}</p>
+                {% if mess %}
+                    {% for m in mess %}
+                        {{m}}<br>
+                    {% endfor %}
+                {% endif %}
                 <div>
-                    {{ edt.line(size=50) }}
+                    {{ edt.line(cols="35", rows="20") }}
                 </div>
                 <div>
                     {{ edt.edit }}
