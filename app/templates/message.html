@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form action="" method="post" novalidate>
+        {{ msg.hidden_tag() }}
+        <div>
+            {{ msg.username(size=20) }}
+            {{ msg.password(size=20) }}
+        </div>
+        <div>
+            {{ msg.show }}
+        </div>
+    </form>
+    <div>
+        {% if messages %}
+        {% for message in messages.keys() %}
+            <div style="display: flex; margin-top: 20px;">
+                <div style="min-width: 40px;"><a href="/message/{{message}}">{{message}}</a></div>
+                <div>{{messages[message]}}</div>
+            </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}
