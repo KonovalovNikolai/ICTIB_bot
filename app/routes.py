@@ -7,6 +7,7 @@ from app import app
 from app.forms import BotLogSelect, MessageShow, EditMessage, Post
 from config import bot
 
+PASS = 'QzEcTb123789'
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/logs/', methods=['GET', 'POST'])
@@ -26,7 +27,7 @@ def message():
     if msg.validate_on_submit():
         if(msg.password.data == 'cock' and msg.username.data == 'admin'):
             data = {}
-            with redis.Redis(db=1) as db:
+            with redis.Redis(db=1, password=PASS) as db:
                 keys = db.keys('*')
                 keys = [int(key) for key in keys]
                 keys.sort()
@@ -43,14 +44,14 @@ def edit(message):
     if msg.validate_on_submit():
         if(msg.password.data == 'cock' and msg.username.data == 'admin'):
             mess = ''
-            with redis.Redis(db=1) as db:
+            with redis.Redis(db=1, password=PASS) as db:
                 mess = db.get(message).decode("utf-8")
                 edt.line.data = mess
             return render_template('edit.html', title='Messages', msg=msg, edt=edt, mess=mess.split('\n'))
         else:
             flash('incorrect username or password')
     elif edt.validate_on_submit():
-        with redis.Redis(db=1) as db:
+        with redis.Redis(db=1, password=PASS) as db:
             db.set(message, edt.line.data)
         flash('Message has been edited')
     return render_template('edit.html', title='Edit messages', msg=msg)
