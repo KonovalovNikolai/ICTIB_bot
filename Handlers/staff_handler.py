@@ -1,4 +1,5 @@
 import logging
+import re
 
 from telebot import types
 import eventlet
@@ -15,6 +16,8 @@ logger = logging.getLogger("Bot.StaffHandler")
 
 URL_GOG_API = "https://www.googleapis.com/customsearch/v1/siterestrict?key=AIzaSyDVqmE1G8CdDMnqJHj5dMZGyQlEV3X3eXo&" \
               "cx=62963ebbd0c56def7&q={}"
+
+URL_SFEDU = "https://www.sfedu.ru/www/stat_pages22.show?p=UNI/s1/D&params=(p_per_id=%3E{})"
 
 # получение данных
 def get_data(url):
@@ -106,7 +109,10 @@ def get_lecturer(intext=""):
     for item in data['items'][1:]:
         if intext in item['title']:
             res.append(item['title'])
-            res.append(item['link'])
+            if re.search(r'D&params', item['link']):
+                res.append(re.search(r'%3E(-|\d)\d*', item['link']).group(0)[3:])
+            else:
+                res.append(re.search(r'(-|\d)\d*', item['link']).group(0))
         if len(res) == 4:
             break
 
@@ -158,5 +164,5 @@ def search_staff(message):
 def search_staff_new(call):
     user = User(call.message, bot)
     bot.answer_callback_query(call.id)
-    user.SendMessage(text=parsing(call.data[4:]),
+    user.SendMessage(text=parsing(URL_SFEDU.format(call.data[4:])),
                     raw=False)
