@@ -6,8 +6,11 @@ import base64
 from bs4 import BeautifulSoup
 
 from Serega.User_Class import User
+from .Markups import back_kb
 from Misc import S, B, M
 from config import bot
+
+logger = logging.getLogger("Bot.StaffHandler")
 
 URL_GOG_API = "https://www.googleapis.com/customsearch/v1/siterestrict?key=AIzaSyDVqmE1G8CdDMnqJHj5dMZGyQlEV3X3eXo&" \
               "cx=62963ebbd0c56def7&q=(inurl:p_per_id)%20AND%20(intext:{})"
@@ -47,14 +50,14 @@ def get_lecturer(intext : str = ''):
         tags_p = text.find_all('p')
 
         # Парсинг кафедры и звания
-        department = ""
+        department = []
         for item in tags_p:
             try:
                 if item.a['href'][0] == '/':
-                    department = " ".join(item.text.replace('\n', '').split())
-                    break
+                    department.append(" ".join(item.text.replace('\n', '').split()))
             except TypeError:
                 pass
+        department = ", ".join(department)
 
         # Парсинг номеров телефонов
         phone = text.find('span', 'phones').text
@@ -94,7 +97,9 @@ def enter_staff(message):
     user = User(message, bot)
     user.SendMessage(text='Введите сообщение для поиска персонала.\nУкажите в нём ФИО, почту или номер.',
                     raw=False,
-                    state=S.SEARCH_STAFF)
+                    state=S.SEARCH_STAFF,
+                    reply_markup=back_kb)
+    logger.error(f'User {user.id} is entering text to search.')
 
 @bot.message_handler(func = lambda message: User(message).GetUserState() == S.SEARCH_STAFF)
 def search_staff(message):
@@ -102,4 +107,5 @@ def search_staff(message):
     user.SendMessage(text = get_lecturer(message.text),
                     raw=False,
                     parse_mode='HTML')
+    logger.error(f'User {user.id} got a search result: {message.text}.')
     user.BackToMain()

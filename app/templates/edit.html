@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form action="" method="post" novalidate>
+        {{ msg.hidden_tag() }}
+        <div>
+            {{ msg.username(size=20) }}
+            {{ msg.password(size=20) }}
+        </div>
+        <div>
+            {{ msg.show }}
+        </div>
+    </form>
+    <div>
+        {% if edt %}
+            <form action="" method="post" novalidate>
+                {{ edt.hidden_tag() }}
+                {% if mess %}
+                    {% for m in mess %}
+                        {{m}}<br>
+                    {% endfor %}
+                {% endif %}
+                <div>
+                    {{ edt.line(cols="35", rows="20") }}
+                </div>
+                <div>
+                    {{ edt.edit }}
+                </div>
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}

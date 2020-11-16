@@ -1,3 +1,5 @@
+import logging
+
 from requests import ConnectionError
 import logging
 
@@ -5,8 +7,10 @@ from telebot import types
 
 from Serega.User_Class import User
 from .Markups import buildings_kb
-from Misc import B, M
+from Misc import B, M, S
 from config import bot
+
+logger = logging.getLogger("Bot.BuildingsHandler")
 
 Buildings = {
     B.BUILD_G : [M.BUILDING_G, 47.2030488, 38.9346782, B.CALL_BUILD_G],
@@ -33,19 +37,29 @@ BuildsInfo = {
 # генерация клавиатуры-списка зданий
 buildings_kb.add(*[types.InlineKeyboardButton(text= i, callback_data= i) for i in Buildings.keys()])
 
-@bot.message_handler(func = lambda message: message.text == B.BUILDINGS)
+@bot.message_handler(func = lambda message: message.text == B.BUILDINGS and
+                        User(message).GetUserState() == S.NORMAL)
 def send_buildings_list(message):
     '''Отправка клавиатуры зданий'''
-    User(message, bot).SendMessage(text = M.CHOOSE_BUILD,
-                                reply_markup=buildings_kb)
+    user = User(message, bot)
+
+    logger.error(f"User {user.id} got the buildings list.")
+
+    # тправка клавиатуры
+    user.SendMessage(
+        text = M.CHOOSE_BUILD, reply_markup=buildings_kb
+        )
 
 @bot.callback_query_handler(func = lambda call: call.data in Buildings)
-def send_build_info(call):
+def send_building_locale(call):
     '''Обработка нажатий клавиш названий зданий'''
     user = User(call.message, bot)
 
-    bot.answer_callback_query(call.id)
+    logger.error(f"User {user.id} chose building {call.data}.")
 
+    # убрать статус ожидания ответа с нажатой кнопки
+    bot.answer_callback_query(call.id)
+    # кнопка доп. информации
     build = Buildings[call.data]
     buildings_info_kb = types.InlineKeyboardMarkup()
     buildings_info_kb.add(types.InlineKeyboardButton(B.BUILD_INFO, callback_data=build[3]))
@@ -57,6 +71,12 @@ def send_build_info(call):
 def send_info(call):
     '''Обработка клавиши ДОП ИНФОРМАЦИЯ'''
     user = User(call.message, bot)
+
+    logger.error(f"User {user.id} got additional information {call.data}.")
+
+    # убрать статус ожидания ответа с нажатой кнопки
     bot.answer_callback_query(call.id)
+    # удаление нажатой кнопки
     user.EditMessageReplyMarkup()
+    # отправка доп. информации
     user.SendMessage(text= BuildsInfo[call.data])

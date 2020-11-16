@@ -6,6 +6,7 @@ from Serega.User_Class import User
 from Misc import B, S, M
 from config import bot
 
+logger = logging.getLogger("Bot.VKHandler")
 
 def create_kb(vk):
     kb = types.InlineKeyboardMarkup(row_width=1)
@@ -30,6 +31,7 @@ def send_inline_follow_menu(message):
     user = User(message, bot)
     vk = user.GetUserVK()
     user.SendMessage(text=M.VK_SHOW, reply_markup=create_kb(vk))
+    logger.error(f'User {user.id} got a vk menu.')
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("vk"))
@@ -39,3 +41,4 @@ def set_inline_follow(call):
     user.UpdateVK(call.data)
     vk = user.GetUserVK()
     user.EditMessageReplyMarkup(create_kb(vk))
+    logger.error(f"User {user.id} changed vk: {call.data}")

@@ -8,7 +8,7 @@ from Misc import *
 from .Markups import day_choose_kb, back_kb, day_choose_search_kb
 from config import bot
 
-timetable_logger = logging.getLogger('Bot.timetable_handle')
+logger = logging.getLogger('Bot.TTHandler')
 
 #Словарь для перевода дней недели в числа
 day_to_number = {
@@ -49,7 +49,7 @@ def choose_day(message):
                         form=[date],
                         reply_markup=day_choose_kb,
                         state=S.TIMETABLE)
-        timetable_logger.error("Пользователь %s получил клавиатуру расписания" % message.chat.id)
+        logger.error(f'User {user.id} got a timetable menu.')
 
 #Обработка клавиатуры расписания
 @bot.message_handler(func = lambda message: User(message).GetUserState() == S.TIMETABLE)
@@ -67,27 +67,24 @@ def send_timetable(message):
         #Получаем расписание
         res = GetTimetable(name = user.group, weekday= day_to_number[text])
         #Вывод расписания
-        user.SendMessage(text= res, raw=False)
-        timetable_logger.error("Пользователь %s получил расписаниеч" % message.chat.id)
-        user.BackToMain()
+        user.BackToMain(text = res, raw= False)
+        logger.error(f'User {user.id} got a timetable: {user.group}, {text}.')
 
     elif (text == B.TODAY.lower()):
         user.GetUserInfo()
         #Получаем расписание
         res = GetTimetable(name = user.group, day = 0)
         #Вывод расписания
-        user.SendMessage(text= res, raw=False)
-        timetable_logger.error("Пользователь %s получил расписаниеч" % message.chat.id)
-        user.BackToMain()
+        user.BackToMain(text = res, raw= False)
+        logger.error(f'User {user.id} got a timetable: {user.group}, {text}.')
 
     elif (text == B.TOMORROW.lower()):
         user.GetUserInfo()
         #Получаем расписание
         res = GetTimetable(name = user.group, day = 1)
         #Вывод расписания
-        user.SendMessage(text= res, raw=False)
-        timetable_logger.error("Пользователь %s получил расписаниеч" % message.chat.id)
-        user.BackToMain()
+        user.BackToMain(text = res, raw= False)
+        logger.error(f'User {user.id} got a timetable: {user.group}, {text}.')
 
     elif (text == B.EXTENDED_T.lower()):
         user.SetExpend()
@@ -95,6 +92,7 @@ def send_timetable(message):
         user.SendMessage(text=M.EXPENDED_SEARCH,
                         form = exp,
                         reply_markup=CreateExpendKb(exp))
+        logger.error(f'User {user.id} got a extended timetable menu.')
 
     #Авторасписание
     elif (text == B.AUTO_TABLE.lower()):
@@ -105,11 +103,11 @@ def send_timetable(message):
         else:
             answer = M.AUTO_OFF
         user.BackToMain(answer)
-        timetable_logger.error("Пользователь %s изменил параметр авторасписания:\n\t%s" % (message.chat.id, ret))
+        logger.error(f'User {user.id} changed auto tt: {ret}.')
 
     #Ничего из предложенного
     else:
-        timetable_logger.error("Пользователь %s сделал неправильный выбор: %s" % (message.chat.id, text))
+        logger.error(f"User {user.id} made wrong choice: {message.text}.")
         user.SendMessage(text= M.ERROR_WRONG_CHOICE)
 
 @bot.message_handler(func = lambda message: User(message).GetUserState() == S.SEARCH_GP)
@@ -120,6 +118,7 @@ def Set_GP(message):
     user.SendMessage(text=M.EXPENDED_SEARCH,
                         form = exp,
                         reply_markup=CreateExpendKb(exp))
+    logger.error(f'User {user.id} entered group: {message.text}.')
 
 @bot.message_handler(func = lambda message: User(message).GetUserState() == S.SEARCH_DAY)
 def Set_Day(message):
@@ -131,8 +130,9 @@ def Set_Day(message):
         user.SendMessage(text=M.EXPENDED_SEARCH,
                         form = exp,
                         reply_markup=CreateExpendKb(exp))
+        logger.error(f'User {user.id} entered day: {message.text}.')
     else:
-        timetable_logger.error("Пользователь %s сделал неправильный выбор: %s" % (message.chat.id, text))
+        logger.error(f"User {user.id} made wrong choice: {message.text}.")
         user.SendMessage(text= M.ERROR_WRONG_CHOICE)
 
 @bot.callback_query_handler(func = lambda call: call.data == B.CALL_SEARCH_GP and
@@ -143,6 +143,7 @@ def change_s_gp(call):
     user.SendMessage(text=M.EXPENDED_GP,
                     reply_markup=back_kb,
                     state=S.SEARCH_GP)
+    logger.error(f'User {user.id} is entering group.')
 
 @bot.callback_query_handler(func = lambda call: call.data == B.CALL_SEARCH_DAY and
                             User(call.message).GetUserState() > 2)
@@ -151,6 +152,7 @@ def change_s_day(call):
     user.SendMessage(text=M.EXPENDED_DAY,
                     reply_markup=day_choose_search_kb,
                     state=S.SEARCH_DAY)
+    logger.error(f'User {user.id} is entering day.')
 
 @bot.callback_query_handler(func = lambda call: call.data == B.CALL_SEARCH_T)
 def Send_search_t(call):
@@ -165,6 +167,6 @@ def Send_search_t(call):
         res = GetTimetable(name = exp[0], day = 0)
     elif(exp[1] == B.TOMORROW.lower()):
         res = GetTimetable(name = exp[0], day = 1)
-    user.SendMessage(text= res, raw=False)
-    user.BackToMain()
+    user.BackToMain(text= res, raw=False)
+    logger.error(f'User {user.id} got a extended timetable: {exp[0]}, {exp[1]}.')
 
