@@ -158,4 +158,5 @@ def search_staff(message):
 def search_staff_new(call):
     user = User(call.message, bot)
     bot.answer_callback_query(call.id)
-    user.SendMessage(text=parsing(call.data[4:]))
+    user.SendMessage(text=parsing(call.data[4:]),
+                    raw=False)
