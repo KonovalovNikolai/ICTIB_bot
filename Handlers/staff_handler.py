@@ -165,4 +165,5 @@ def search_staff_new(call):
     user = User(call.message, bot)
     bot.answer_callback_query(call.id)
     user.SendMessage(text=parsing(URL_SFEDU.format(call.data[4:])),
-                    raw=False)
+                    raw=False,
+                    parse_mode='HTML')
