@@ -83,8 +83,8 @@ def get_lecturer(intext=""):
     if not data:
         return 'Преподаватель не найден.'
     try:
-        intext = data['spelling']['correctedQuery']
-        data = get_data(URL_GOG_API.format("(inurl:p_per_id) " + intext))
+        intext = data['spelling']['correctedQuery'][17:]
+        data = get_data(URL_GOG_API.format(data['spelling']['correctedQuery'])
     except KeyError:
         pass
     try:
