@@ -11,7 +11,7 @@ from DB_Helper.RedisHelper import RedisHelper
 
 # вариативная строка vk api
 URL_API_VK = "https://api.vk.com/method/wall.get?owner_id=-{}&count=2"\
-    "&extended=true&access_token=acccb6937601b1d05b2ed6e7b6c15ea3f3d1f37813008e8d83ca42a91ce2022a1e04e503499e970e01d9c&v=5.84"
+    "&extended=true&access_token={TOKEN}&v=5.84"
 
 # получение данных
 def get_data(URL):
